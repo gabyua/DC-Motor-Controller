@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<synergyModuleDescription>
-  <config id="config.board.s3a1_tb" path="ssp_cfg/bsp/bsp_board_cfg.h" version="0">
-    <content>#include "../../../synergy/board/s3a1_tb/bsp.h"</content>
-  </config>
-  <board config="config.board.s3a1_tb" device="R7FS3A17C3A01CFB" display="S3A1 TB" id="board.s3a1_tb" version="0"/>
-</synergyModuleDescription>

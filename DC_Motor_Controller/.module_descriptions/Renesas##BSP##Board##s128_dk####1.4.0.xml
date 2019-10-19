@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<synergyModuleDescription>
-  <config id="config.board.s128_dk" path="ssp_cfg/bsp/bsp_board_cfg.h" version="0">
-    <content>#include "../../../synergy/board/s128_dk/bsp.h"</content>
-  </config>
-  <board config="config.board.s128_dk" device="R7FS128783A01CFM" display="S128 DK" id="board.s128_dk" version="0"/>
-</synergyModuleDescription>
