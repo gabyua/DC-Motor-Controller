@@ -1,0 +1,164 @@
+<?xml version="1.0" ?>
+<synergyModuleDescription>
+	<config id="config.framework.sf_ble_rl78g1d_onboard_profile" path="ssp_cfg/framework/sf_ble_rl78g1d_onboard_profile_cfg.h" version="0">
+		
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.param_checking_enable.bsp" display="Parameter Checking" id="config.framework.sf_ble_rl78g1d_onboard_profile.param_checking_enable">
+			<option display="Default (BSP)" id="config.framework.sf_ble_rl78g1d_onboard_profile.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.param_checking_enable.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.param_checking_enable.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_hrp_enabled.enabled" display="Heart Rate Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_hrp_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_hrp_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_hrp_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_anp_enabled.disabled" display="Alert Notification Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_anp_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_anp_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_anp_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_blp_enabled.disabled" display="Blood Pressure Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_blp_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_blp_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_blp_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_fmp_enabled.disabled" display="Find Me Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_fmp_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_fmp_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_fmp_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_hid_enabled.disabled" display="HID Over GATT Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_hid_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_hid_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_hid_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_htp_enabled.disabled" display="Health Thermometer Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_htp_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_htp_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_htp_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_paps_enabled.disabled" display="Phone Alert Status Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_paps_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_paps_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_paps_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_pxp_enabled.disabled" display="Proximity Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_pxp_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_pxp_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_pxp_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_scps_enabled.disabled" display="Scan Parameter Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_scps_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_scps_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_scps_enabled.disabled" value="(0)"/>
+		</property>
+		<property default="config.framework.sf_ble_rl78g1d_onboard_profile.prf_tip_enabled.disabled" display="Time Profile" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_tip_enabled">
+			<option display="Enabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_tip_enabled.enabled" value="(1)"/>
+			<option display="Disabled" id="config.framework.sf_ble_rl78g1d_onboard_profile.prf_tip_enabled.disabled" value="(0)"/>
+		</property>
+		<content>
+		/** Configuration to enable On-Board Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_ONBOARD_PROFILE_SUPPORT
+		#define SF_BLE_RL78G1D_CFG_ONBOARD_PROFILE_SUPPORT  (1)
+		#endif
+		/** Configuration to enable Parameter Checking in On-Board Profile Code */
+		#ifndef SF_BLE_ONBOARD_PROFILE_RL78G1D_CFG_PARAM_CHECKING_ENABLE
+		#define SF_BLE_ONBOARD_PROFILE_RL78G1D_CFG_PARAM_CHECKING_ENABLE ${config.framework.sf_ble_rl78g1d_onboard_profile.param_checking_enable}
+		#endif
+		/** Configuration to enable Heart Rate Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_HRP_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_HRP_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_hrp_enabled}
+		#endif
+		/** Configuration to enable Alert Notification Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_ANP_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_ANP_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_anp_enabled}
+		#endif
+		/** Configuration to enable Blood Pressure Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_BLP_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_BLP_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_blp_enabled}
+		#endif
+		/** Configuration to enable Find Me Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_FMP_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_FMP_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_fmp_enabled}
+		#endif
+		/** Configuration to enable Human Interface Overt GATT Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_HID_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_HID_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_hid_enabled}
+		#endif
+		/** Configuration to enable Health Thermometer Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_HTP_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_HTP_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_htp_enabled}
+		#endif
+		/** Configuration to enable Phone Alert Status Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_PAPS_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_PAPS_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_paps_enabled}
+		#endif
+		/** Configuration to enable Proximity Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_PXP_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_PXP_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_pxp_enabled}
+		#endif
+		/** Configuration to enable Scan Parameters Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_SCPS_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_SCPS_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_scps_enabled}
+		#endif
+		/** Configuration to enable Time Profile Support */
+		#ifndef SF_BLE_RL78G1D_CFG_PRF_TIP_ENABLED
+		#define SF_BLE_RL78G1D_CFG_PRF_TIP_ENABLED ${config.framework.sf_ble_rl78g1d_onboard_profile.prf_tip_enabled}
+		#endif
+		</content>
+	</config>
+	<module config="config.framework.sf_ble_rl78g1d_onboard_profile" display="Framework|Networking|BLE|${module.framework.sf_ble_rl78g1d_onboard_profile.name} On-Board Profile on RL78G1D BLE Framework" id="module.framework.sf_ble_rl78g1d_onboard_profile" version="1">
+			<constraint display="Module instances must have unique names">
+			"${interface.framework.sf_ble_rl78g1d_onboard_profile.${module.framework.sf_ble_rl78g1d_onboard_profile.name}}" === "1"
+		</constraint>
+		<requires interface="_rtos" />
+		<requires id="module.framework.sf_ble_rl78g1d_onboard_profile.requires.sf_ble_rl78g1d" interface="interface.framework.sf_ble_rl78g1d" display="Add BLE Device Driver">
+		</requires>
+		<provides interface="interface.framework.sf_ble_rl78g1d_onboard_profile" />
+		<provides interface="interface.framework.sf_ble_onboard_profile_on_sf_ble_rl78g1d_onboard_profile" />
+		<provides interface="interface.framework.sf_ble_rl78g1d_onboard_profile.${module.framework.sf_ble_rl78g1d_onboard_profile.name}" />
+		<property default="g_sf_ble_onboard_profile${_instance}" display="Name" id="module.framework.sf_ble_rl78g1d_onboard_profile.name" >
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_ble_rl78g1d_onboard_profile.name}")</constraint>
+        </property>
+		<header>
+		/** sf_ble_rl78g1d_onboard_profile instance on RL78G1D */
+		extern sf_ble_onboard_profile_instance_t ${module.framework.sf_ble_rl78g1d_onboard_profile.name};
+		</header>
+	<includes>#include &quot;sf_ble_api.h&quot;
+	#include &quot;sf_ble_rl78g1d_onboard_profile.h&quot;
+	#include &quot;sf_ble_prf_blp_api.h&quot;
+	#include &quot;sf_ble_prf_hrp_api.h&quot;
+	#include &quot;sf_ble_prf_ias_api.h&quot;
+	#include &quot;sf_ble_prf_fmp_api.h&quot;
+	#include &quot;sf_ble_prf_bas_api.h&quot;
+	#include &quot;sf_ble_prf_pxp_api.h&quot;
+	#include &quot;sf_ble_prf_anp_api.h&quot;
+	#include &quot;sf_ble_prf_htp_api.h&quot;
+	#include &quot;sf_ble_prf_hid_api.h&quot;
+	#include &quot;sf_ble_prf_cts_api.h&quot;
+	#include &quot;sf_ble_prf_ndcs_api.h&quot;
+	#include &quot;sf_ble_prf_rtus_api.h&quot;
+	#include &quot;sf_ble_prf_tip_api.h&quot;
+	#include &quot;sf_ble_prf_scps_api.h&quot;
+	#include &quot;sf_ble_prf_paps_api.h&quot;</includes>
+	<declarations>
+/***********************************************************************************************************************
+ * BLE On-Board profile Instance
+ **********************************************************************************************************************/
+/** Control structure for BLE On-Board Profile */
+static sf_ble_onboard_profile_ctrl_t ${module.framework.sf_ble_rl78g1d_onboard_profile.name}_ctrl;
+
+/** Configuration structure for BLE On-Board Profile */
+static const sf_ble_onboard_profile_cfg_t ${module.framework.sf_ble_rl78g1d_onboard_profile.name}_cfg =
+{
+  .p_low_lvl_ble = &amp;${module.framework.sf_ble_rl78g1d_onboard_profile.requires.sf_ble_rl78g1d::module.framework.sf_ble_rl78g1d.name},
+};
+
+sf_ble_onboard_profile_instance_t ${module.framework.sf_ble_rl78g1d_onboard_profile.name} =
+{
+  .p_ctrl = &amp;${module.framework.sf_ble_rl78g1d_onboard_profile.name}_ctrl,
+  .p_cfg  = &amp;${module.framework.sf_ble_rl78g1d_onboard_profile.name}_cfg,
+  .p_api  = &amp;g_sf_ble_onboard_profile_on_sf_ble_rl78g1d_onboard_profile
+};
+	</declarations>
+	<init>
+		ssp_err_t ssp_err_${module.framework.sf_ble_rl78g1d_onboard_profile.name};
+		ssp_err_${module.framework.sf_ble_rl78g1d_onboard_profile.name} = ${module.framework.sf_ble_rl78g1d_onboard_profile.name}.p_api->open(${module.framework.sf_ble_rl78g1d_onboard_profile.name}.p_ctrl, ${module.framework.sf_ble_rl78g1d_onboard_profile.name}.p_cfg);
+		if (SSP_SUCCESS != ssp_err_${module.framework.sf_ble_rl78g1d_onboard_profile.name})
+		{
+			while (1);
+		}
+        </init>
+	</module>
+</synergyModuleDescription>

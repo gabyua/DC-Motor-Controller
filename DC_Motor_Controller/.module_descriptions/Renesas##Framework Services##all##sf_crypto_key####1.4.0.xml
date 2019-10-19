@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+    <config id="config.framework.sf_crypto_key" path="ssp_cfg/framework/sf_crypto_key_cfg.h" version="0">
+        <property default="config.framework.sf_crypto_key.param_checking_enable.bsp" display="Parameter Checking" id="config.framework.sf_crypto_key.param_checking_enable" description="Selects if code for parameter checking is to be included in the build.">
+            <option display="Default (BSP)" id="config.framework.sf_crypto_key.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled"       id="config.framework.sf_crypto_key.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled"      id="config.framework.sf_crypto_key.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>
+            #define SF_CRYPTO_KEY_CFG_PARAM_CHECKING_ENABLE ${config.framework.sf_crypto_key.param_checking_enable}
+        </content>
+    </config>
+    <module config="config.framework.sf_crypto_key" display="Framework|Crypto|${module.framework.sf_crypto_key.name} Crypto Key Framework on sf_crypto_key" id="module.framework.sf_crypto_key" version="1" url="http://knowledgebase.renesas.com/English_Content/Renesas_Synergy%E2%84%A2_Platform/Renesas_Synergy_Knowledge_Base/sf_crypto_key_Module_Guide_Resources">
+        <constraint display="Module instances must have unique names">
+            "${interface.framework.sf_crypto_key.${module.framework.sf_crypto_key.name}}" === "1"
+        </constraint>
+        <requires interface="_rtos" />
+        <requires id="module.framework.sf_crypto_key.requires.sf_crypto" interface="interface.framework.sf_crypto" display="Add Crypto Common Framework" />
+        <provides interface="interface.framework.sf_crypto_key" />
+        <provides interface="interface.framework.sf_crypto_key.${module.framework.sf_crypto_key.name}" />
+
+        <property default="g_sf_crypto_key${_instance}" display="Name" id="module.framework.sf_crypto_key.name" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_crypto_key.name}")</constraint>
+        </property>
+        <property id="module.framework.sf_crypto_key.key_type" display="Key type" default="module.framework.sf_crypto_key.key_type.rsa_plain_text" description="Select the key type. For AES, the byte pool size defined in sf_crypto must be >= 280 bytes.">
+            <option display="RSA Plain text" id="module.framework.sf_crypto_key.key_type.rsa_plain_text" value="SF_CRYPTO_KEY_TYPE_RSA_PLAIN_TEXT"/>
+            <option display="RSA CRT Plain text" id="module.framework.sf_crypto_key.key_type.rsa_crt_plain_text" value="SF_CRYPTO_KEY_TYPE_RSA_CRT_PLAIN_TEXT"/>
+            <option display="RSA Wrapped" id="module.framework.sf_crypto_key.key_type.rsa_wrapped" value="SF_CRYPTO_KEY_TYPE_RSA_WRAPPED"/>
+            <option display="AES Wrapped" id="module.framework.sf_crypto_key.key_type.wrapped_aes" value="SF_CRYPTO_KEY_TYPE_AES_WRAPPED"/>
+            <option display="ECC Wrapped" id="module.framework.sf_crypto_key.key_type.ecc_wrapped" value="SF_CRYPTO_KEY_TYPE_ECC_WRAPPED"/>
+        </property>
+        <property id="module.framework.sf_crypto_key.key_size" display="Key size" default="module.framework.sf_crypto_key.key_size.rsa_2048b" description="Select the key size.">
+            <option display="RSA 1024-bits" id="module.framework.sf_crypto_key.key_size.rsa_1024b" value="SF_CRYPTO_KEY_SIZE_RSA_1024"/>
+            <option display="RSA 2048-bits" id="module.framework.sf_crypto_key.key_size.rsa_2048b" value="SF_CRYPTO_KEY_SIZE_RSA_2048"/>
+            <option display="AES 128-bits" id="module.framework.sf_crypto_key.key_size.aes_128b" value="SF_CRYPTO_KEY_SIZE_AES_128"/>
+            <option display="AES XTS 128-bits" id="module.framework.sf_crypto_key.key_size.aes_128b_xts" value="SF_CRYPTO_KEY_SIZE_AES_XTS_128"/>
+            <option display="AES 192-bits" id="module.framework.sf_crypto_key.key_size.aes_192b" value="SF_CRYPTO_KEY_SIZE_AES_192"/>
+            <option display="AES 256-bits" id="module.framework.sf_crypto_key.key_size.aes_256b" value="SF_CRYPTO_KEY_SIZE_AES_256"/>
+            <option display="AES XTS 256-bits" id="module.framework.sf_crypto_key.key_size.aes_256b_xts" value="SF_CRYPTO_KEY_SIZE_AES_XTS_256"/>
+            <option display="ECC 192-bits" id="module.framework.sf_crypto_key.key_size.ecc_192b" value="SF_CRYPTO_KEY_SIZE_ECC_192"/>
+            <option display="ECC 256-bits" id="module.framework.sf_crypto_key.key_size.ecc_256b" value="SF_CRYPTO_KEY_SIZE_ECC_256"/>
+        </property>
+        <property default="sf_crypto_key_init${_instance}" display="Name of generated initialization function" id="module.framework.sf_crypto_key.init_function" description="Specify the name of the generated initialization function.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_crypto_key.init_function}")</constraint>
+        </property>
+        <property default="sf_crypto_key_domain_params${_instance}" display="Name of Domain Parameter (Applicable only for ECC)" id="module.framework.sf_crypto_key.domain_params" description="Specify the name of the ECC domain parameter.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_crypto_key.domain_params}")</constraint>
+        </property>
+        <property default="sf_crypto_key_generator_point${_instance}" display="Name of Generator Point (Applicable only for ECC)" id="module.framework.sf_crypto_key.generator_point" description="Specify the name of the ECC generator point.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_crypto_key.generator_point}")</constraint>
+        </property>
+        <property default="module.framework.sf_crypto_key.init.enable" display="Auto Initialization" id="module.framework.sf_crypto_key.init" description="Select if sf_crypto_key will be initialized during startup.">
+            <option display="Enable"  id="module.framework.sf_crypto_key.init.enable"  value="1"/>
+            <option display="Disable" id="module.framework.sf_crypto_key.init.disable" value="0"/>
+        </property>
+
+        <header>
+            extern sf_crypto_key_instance_t ${module.framework.sf_crypto_key.name};
+            void ${module.framework.sf_crypto_key.name}_err_callback(void * p_instance, void * p_data);
+            void ${module.framework.sf_crypto_key.init_function}(void);
+        </header>
+        <includes>
+            #include &quot;sf_crypto_key.h&quot;
+        </includes>
+        <declarations>
+            #if defined(__ICCARM__)
+            #define ${module.framework.sf_crypto_key.name}_err_callback_WEAK_ATTRIBUTE
+            #pragma weak ${module.framework.sf_crypto_key.name}_err_callback  = ${module.framework.sf_crypto_key.name}_err_callback_internal
+            #elif defined(__GNUC__)
+            #define ${module.framework.sf_crypto_key.name}_err_callback_WEAK_ATTRIBUTE __attribute__ ((weak, alias("${module.framework.sf_crypto_key.name}_err_callback_internal")))
+            #endif
+            void ${module.framework.sf_crypto_key.name}_err_callback(void * p_instance, void * p_data) ${module.framework.sf_crypto_key.name}_err_callback_WEAK_ATTRIBUTE;
+
+            #define SF_CRYPTO_KEY_TYPE_RSA_PLAIN_TEXT 100
+            #define SF_CRYPTO_KEY_TYPE_RSA_CRT_PLAIN_TEXT 200
+            #define SF_CRYPTO_KEY_TYPE_RSA_WRAPPED 300
+            #define SF_CRYPTO_KEY_TYPE_AES_WRAPPED 400
+            #define SF_CRYPTO_KEY_TYPE_ECC_PLAIN_TEXT 500
+            #define SF_CRYPTO_KEY_TYPE_ECC_WRAPPED 600
+           
+            /* Verifying byte pool size for AES Key_type selection (which must be greater than or equal to 280) */
+            #if (${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_AES_WRAPPED)
+
+            #ifndef AES_MAX_MEMORY_POOL_SIZE
+            #define AES_MAX_MEMORY_POOL_SIZE 280
+            #endif /* End of AES_MAX_MEMORY_POOL_SIZE condition */
+
+            #if (${module.framework.sf_crypto_key.requires.sf_crypto::module.framework.sf_crypto.memory_pool_size} &lt; AES_MAX_MEMORY_POOL_SIZE)
+            #error  "For AES selection, Default Byte Pool size must be greater than or equal to 280Bytes"
+            #undef AES_MAX_MEMORY_POOL_SIZE
+            #endif /* End of memory pool size condition */
+	    
+            #endif /* End of key_type condition */
+
+            #define SF_CRYPTO_KEY_SIZE_RSA_1024 100
+            #define SF_CRYPTO_KEY_SIZE_RSA_2048 200
+            #define SF_CRYPTO_KEY_SIZE_AES_128 300
+            #define SF_CRYPTO_KEY_SIZE_AES_XTS_128 400
+            #define SF_CRYPTO_KEY_SIZE_AES_192 500
+            #define SF_CRYPTO_KEY_SIZE_AES_256 600
+            #define SF_CRYPTO_KEY_SIZE_AES_XTS_256 700
+            #define SF_CRYPTO_KEY_SIZE_ECC_192 800
+            #define SF_CRYPTO_KEY_SIZE_ECC_256 900
+            
+            /* For AES Key_type, key_size must be from 128/192/256/Xts 128/ Xts 256-bits */
+            #if ((${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_AES_WRAPPED) &amp;&amp; \
+                    ((${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_AES_128) &amp;&amp; \
+                     (${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_AES_XTS_128) &amp;&amp; \
+                     (${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_AES_192) &amp;&amp; \
+                     (${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_AES_256) &amp;&amp; \
+                     (${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_AES_XTS_256)))
+            #error  "For AES selection, Key size must be AES 128-bits/192-bits/256-bits/Xts 128-bits/Xts 256-bits"
+            #endif
+
+            /* For RSA Key_type, key_size must be from 1024-bits/2048-bits */
+            #if (((${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_RSA_PLAIN_TEXT) || \
+                  (${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_RSA_CRT_PLAIN_TEXT) || \
+                  (${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_RSA_WRAPPED)) &amp;&amp; \
+                     ((${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_RSA_1024) &amp;&amp; \
+                      (${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_RSA_2048)))
+            #error  "For RSA selection, Key size must be RSA 1024-bits/2048-bits"
+            #endif
+
+            /* For ECC Key_type, key_size must be from ECC 192-bits/256-bits */
+            #if (((${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_ECC_PLAIN_TEXT) || \
+                  (${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_ECC_WRAPPED)) &amp;&amp; \
+                     ((${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_ECC_192) &amp;&amp; \
+                      (${module.framework.sf_crypto_key.key_size} != SF_CRYPTO_KEY_SIZE_ECC_256)))
+            #error  "For ECC selection, Key size must be ECC 192-bits/256-bits"
+            #endif
+
+            #if ((${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_ECC_PLAIN_TEXT) || \
+                 (${module.framework.sf_crypto_key.key_type} == SF_CRYPTO_KEY_TYPE_ECC_WRAPPED))
+
+            #ifndef DEFINE_ECC_INPUT_PARAMETERS
+            #define DEFINE_ECC_INPUT_PARAMETERS
+            #endif /* End of DEFINE_ECC_INPUT_PARAMETERS */
+	    
+            #define NUMBER_OF_BYTES_IN_WORD                (4U)
+
+            #if (${module.framework.sf_crypto_key.key_size} == SF_CRYPTO_KEY_SIZE_ECC_192)
+            #define ECC_DOMAIN_PARAMETER_WITH_ORDER_LENGTH_WORDS        (24U)
+            #define ECC_GENERATOR_POINT_LENGTH_WORDS                    (12U)
+            #elif (${module.framework.sf_crypto_key.key_size} == SF_CRYPTO_KEY_SIZE_ECC_256)
+            #define ECC_DOMAIN_PARAMETER_WITH_ORDER_LENGTH_WORDS        (32U)
+            #define ECC_GENERATOR_POINT_LENGTH_WORDS                    (16U)
+            #else
+            /* Do Nothing */
+            #endif /* End of key_size condition */
+	        
+            /* User Must declare 2 parameters at global scope and fill the data, before Build */
+            extern uint8_t input_domain_parameter[ECC_DOMAIN_PARAMETER_WITH_ORDER_LENGTH_WORDS*NUMBER_OF_BYTES_IN_WORD];
+            extern uint8_t input_generator_point[ECC_GENERATOR_POINT_LENGTH_WORDS*NUMBER_OF_BYTES_IN_WORD];
+            #endif /* End of ECC Check */
+
+            #undef SF_CRYPTO_KEY_SIZE_RSA_1024
+            #undef SF_CRYPTO_KEY_SIZE_RSA_2048
+            #undef SF_CRYPTO_KEY_SIZE_AES_128
+            #undef SF_CRYPTO_KEY_SIZE_AES_XTS_128
+            #undef SF_CRYPTO_KEY_SIZE_AES_192
+            #undef SF_CRYPTO_KEY_SIZE_AES_256
+            #undef SF_CRYPTO_KEY_SIZE_AES_XTS_256
+            #undef SF_CRYPTO_KEY_SIZE_ECC_192
+            #undef SF_CRYPTO_KEY_SIZE_ECC_256
+
+            #undef SF_CRYPTO_KEY_TYPE_RSA_PLAIN_TEXT
+            #undef SF_CRYPTO_KEY_TYPE_RSA_CRT_PLAIN_TEXT
+            #undef SF_CRYPTO_KEY_TYPE_RSA_WRAPPED
+            #undef SF_CRYPTO_KEY_TYPE_AES_WRAPPED
+            #undef SF_CRYPTO_KEY_TYPE_ECC_PLAIN_TEXT
+            #undef SF_CRYPTO_KEY_TYPE_ECC_WRAPPED
+            
+            /* Control block for ${module.framework.sf_crypto_key.name}. */
+            sf_crypto_key_instance_ctrl_t ${module.framework.sf_crypto_key.name}_ctrl;
+
+            /* Configuration structure for ${module.framework.sf_crypto_key.name}. */
+            sf_crypto_key_cfg_t ${module.framework.sf_crypto_key.name}_cfg =
+            {
+                .key_type                  = ${module.framework.sf_crypto_key.key_type},
+                .key_size                  = ${module.framework.sf_crypto_key.key_size},
+            #ifdef DEFINE_ECC_INPUT_PARAMETERS
+                .domain_params             = {&amp;input_domain_parameter[0], ECC_DOMAIN_PARAMETER_WITH_ORDER_LENGTH_WORDS*NUMBER_OF_BYTES_IN_WORD},
+                .generator_point           = {&amp;input_generator_point[0], ECC_GENERATOR_POINT_LENGTH_WORDS*NUMBER_OF_BYTES_IN_WORD},
+            #undef ECC_DOMAIN_PARAMETER_WITH_ORDER_LENGTH_WORDS
+            #undef ECC_GENERATOR_POINT_LENGTH_WORDS
+            #undef DEFINE_ECC_INPUT_PARAMETERS
+            #else
+                .domain_params             = {NULL, 0},
+                .generator_point           = {NULL, 0},
+            #endif
+                .p_lower_lvl_crypto_common = (sf_crypto_instance_t *)&amp;${module.framework.sf_crypto_key.requires.sf_crypto::module.framework.sf_crypto.name}, 
+                .p_extend                  = NULL, 
+
+            };
+
+            /* Instance structure for ${module.framework.sf_crypto_key.name}. */
+            sf_crypto_key_instance_t ${module.framework.sf_crypto_key.name} = 
+            {
+                .p_ctrl = &amp;${module.framework.sf_crypto_key.name}_ctrl,
+                .p_cfg  = &amp;${module.framework.sf_crypto_key.name}_cfg,
+                .p_api  = &amp;g_sf_crypto_key_api
+            };
+
+            /*******************************************************************************************************************//**
+            * @brief      This is a weak example initialization error function.  It should be overridden by defining a user  function 
+            *             with the prototype below.
+            *             - void ${module.framework.sf_crypto_key.name}_err_callback(void * p_instance, void * p_data)
+            *
+            * @param[in]  p_instance arguments used to identify which instance caused the error and p_data Callback arguments used to identify what error caused the callback.
+            **********************************************************************************************************************/
+            void ${module.framework.sf_crypto_key.name}_err_callback_internal(void * p_instance, void * p_data);
+            void ${module.framework.sf_crypto_key.name}_err_callback_internal(void * p_instance, void * p_data)
+            {
+                /** Suppress compiler warning for not using parameters. */
+                SSP_PARAMETER_NOT_USED(p_instance);
+                SSP_PARAMETER_NOT_USED(p_data);
+
+                /** An error has occurred. Please check function arguments for more information. */
+                BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+            }
+			
+            /*******************************************************************************************************************//**
+            * @brief     Initialization function that the user can choose to have called automatically during thread entry.
+            *            The user can call this function at a later time if desired using the prototype below.
+            *            - void ${module.framework.sf_crypto_key.init_function}(void)
+            **********************************************************************************************************************/
+            void ${module.framework.sf_crypto_key.init_function}(void)
+            {
+                ssp_err_t ssp_err_${module.framework.sf_crypto_key.name};
+                ssp_err_${module.framework.sf_crypto_key.name} = ${module.framework.sf_crypto_key.name}.p_api->open(${module.framework.sf_crypto_key.name}.p_ctrl, ${module.framework.sf_crypto_key.name}.p_cfg);
+                if (SSP_SUCCESS != ssp_err_${module.framework.sf_crypto_key.name})
+                {
+                    ${module.framework.sf_crypto_key.name}_err_callback((void *)&amp;${module.framework.sf_crypto_key.name},&amp;ssp_err_${module.framework.sf_crypto_key.name});
+                }
+            }
+        </declarations>
+        <init>
+            /** Call initialization function for ${module.framework.sf_crypto_key.name}. */
+            #if (${module.framework.sf_crypto_key.init})
+            /** Call initialization function if user has selected to do so. */
+            ${module.framework.sf_crypto_key.init_function}();
+            #endif
+        </init>
+    </module>
+</synergyModuleDescription>

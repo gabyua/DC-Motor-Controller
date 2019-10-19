@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>  
+    <config id="config.framework.block_media_ram" path="ssp_cfg/framework/sf_block_media_ram_cfg.h" version="0">
+        <property default="config.framework.block_media_ram.param_checking_enable.bsp" display="Parameter Checking" id="config.framework.block_media_ram.param_checking_enable" description="Selects if code for parameter checking is to be included in the build.">
+            <option display="Default (BSP)" id="config.framework.block_media_ram.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled" id="config.framework.block_media_ram.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled" id="config.framework.block_media_ram.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>#define BLOCK_MEDIA_RAM_CFG_PARAM_CHECKING_ENABLE ${config.framework.block_media_ram.param_checking_enable}
+        </content>
+    </config>   
+    <module config="config.framework.block_media_ram" display="Framework|File System|${module.framework.block_media.name} Block Media Framework on sf_block_media_ram" id="module.framework.block_media_on_ram" version="1">        
+        <constraint display="Module instances must have unique names">
+            "${interface.framework.block_media.${module.framework.block_media.name}}" === "1"
+        </constraint>       
+        <requires interface="_rtos" />
+        <provides interface="interface.framework.block_media" />
+        <provides interface="interface.framework.block_media_on_sf_block_media_ram" />
+        <provides interface="interface.framework.block_media.${module.framework.block_media.name}" />
+        <property id="module.framework.block_media.name" display="Name" default="g_sf_block_media_ram${_instance}" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.block_media.name}")</constraint>
+        </property>     
+        <property id="module.framework.block_media.block_size" display="Block size of media in bytes" default="512" description="Specify the size of a block in bytes.">
+            <constraint display="Value must be an integer greater than 0">testInteger("${module.framework.block_media.block_size}")  &amp;&amp; ("${module.framework.block_media.block_size}" &gt; 0)</constraint>
+        </property>  
+        <property id="module.framework.block_media.ram_block_count" display="Number of blocks to allocate" default="16" description="Specify the number of blocks to allocate. Include the size of boot record, FAT area, and root directory.">
+            <constraint display="Value must be an integer greater than 0">testInteger("${module.framework.block_media.ram_block_count}")  &amp;&amp; ("${module.framework.block_media.ram_block_count}" &gt; 0)</constraint>
+        </property>  
+        <property id="module.framework.block_media.buffer_location" display="Enter the valid section for RAM buffer allocation" default="noinit" description="Specify the name of the section where the RAM buffer will be allocated.">
+            <constraint display="This property must be a valid section name">testSymbol("${module.framework.block_media.buffer_location}")</constraint>
+        </property>
+        <header>
+            /** Block Media on RAM Instance */
+            extern sf_block_media_instance_t ${module.framework.block_media.name};
+        </header>
+        <includes>
+            #include &quot;sf_block_media_ram.h&quot;
+            #include &quot;sf_block_media_api.h&quot;
+        </includes>
+        <declarations>
+            uint8_t ${module.framework.block_media.name}_buffer[${module.framework.block_media.ram_block_count} * ${module.framework.block_media.block_size}] BSP_PLACE_IN_SECTION_V2(&quot;.${module.framework.block_media.buffer_location}&quot;) BSP_ALIGN_VARIABLE_V2(BSP_STACK_ALIGNMENT);
+            static sf_block_media_ram_instance_ctrl_t ${module.framework.block_media.name}_ctrl;
+            static const sf_block_media_on_ram_cfg_t ${module.framework.block_media.name}_block_media_cfg =
+            {
+                .p_ram_buffer  =  ${module.framework.block_media.name}_buffer,
+                .ram_buffer_size = (${module.framework.block_media.ram_block_count} * ${module.framework.block_media.block_size})
+            };
+            
+            static sf_block_media_cfg_t ${module.framework.block_media.name}_cfg =
+            {
+                .block_size          = ${module.framework.block_media.block_size},
+                .p_extend            = &amp;${module.framework.block_media.name}_block_media_cfg
+            };
+            
+            sf_block_media_instance_t ${module.framework.block_media.name} =
+            {
+                .p_ctrl = &amp;${module.framework.block_media.name}_ctrl,
+                .p_cfg =  &amp;${module.framework.block_media.name}_cfg,
+                .p_api =  &amp;g_sf_block_media_on_sf_block_media_ram
+            };              
+
+        </declarations>
+    </module>
+</synergyModuleDescription>

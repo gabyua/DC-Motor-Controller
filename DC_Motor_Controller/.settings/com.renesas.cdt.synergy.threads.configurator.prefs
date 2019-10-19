@@ -1,0 +1,15 @@
+collapse/module.driver.display_on_glcd.354578869=false
+collapse/module.driver.external_irq_on_icu.2057518628=false
+collapse/module.driver.i2c_on_riic.651965783=false
+collapse/module.driver.jpeg_decode.149321229=false
+collapse/module.driver.spi_on_sci_spi.1834260689=false
+collapse/module.driver.transfer_on_dtc.1783064155=false
+collapse/module.driver.transfer_on_dtc.259340434=false
+collapse/module.el.gx.661303152=false
+collapse/module.framework.sf_el_gx.1518393638=false
+collapse/module.framework.sf_external_irq_on_sf_external_irq.1771141069=false
+collapse/module.framework.sf_jpeg_decode.265438374=false
+collapse/module.framework.sf_tes_2d_drw.2048218264=false
+collapse/module.framework.sf_touch_panel_on_sf_touch_panel_i2c.1430559466=false
+collapse/module.framework.tes.dave2d.347373258=false
+eclipse.preferences.version=1

@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<synergyConfiguration version="3">
+  <synergyPinConfiguration>
+    <pincfg active="true" name="S128-DK.pincfg" symbol="g_bsp_pin_cfg"/>
+  </synergyPinConfiguration>
+</synergyConfiguration>

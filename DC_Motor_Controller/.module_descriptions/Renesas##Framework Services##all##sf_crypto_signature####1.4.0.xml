@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+    <config id="config.framework.sf_crypto_signature" path="ssp_cfg/framework/sf_crypto_signature_cfg.h" version="0">
+        <property default="config.framework.sf_crypto_signature.param_checking_enable.bsp" display="Parameter Checking" id="config.framework.sf_crypto_signature.param_checking_enable">
+            <option display="Default (BSP)" id="config.framework.sf_crypto_signature.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled"       id="config.framework.sf_crypto_signature.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled"      id="config.framework.sf_crypto_signature.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>
+            #define SF_CRYPTO_SIGNATURE_CFG_PARAM_CHECKING_ENABLE ${config.framework.sf_crypto_signature.param_checking_enable}
+        </content>
+    </config>
+    <module config="config.framework.sf_crypto_signature" display="Framework|Crypto|${module.framework.sf_crypto_signature.name} Crypto Signature Framework on sf_crypto_signature" id="module.framework.sf_crypto_signature" version="1">
+        <constraint display="Module instances must have unique names">
+            "${interface.framework.sf_crypto_signature.${module.framework.sf_crypto_signature.name}}" === "1"
+        </constraint>
+        <constraint display="Memory pool size for RSA must be greater than or equal to 1450 Bytes.">("${module.framework.sf_crypto_signature.requires.sf_crypto::module.framework.sf_crypto.memory_pool_size}") &gt;= 1450</constraint>    
+
+        <requires interface="_rtos" />
+        <requires id="module.framework.sf_crypto_signature.requires.sf_crypto" interface="interface.framework.sf_crypto" display="Add Crypto Common Framework" />
+        <requires id="module.framework.sf_crypto_signature.requires.sf_crypto_hash" interface="interface.framework.sf_crypto_hash" display="Add Crypto HASH Framework" />
+        <provides interface="interface.framework.sf_crypto_signature" />
+        <provides interface="interface.framework.sf_crypto_signature.${module.framework.sf_crypto_signature.name}"/>
+      
+        <property default="g_sf_crypto_signature${_instance}" display="Name" id="module.framework.sf_crypto_signature.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_crypto_signature.name}")</constraint>
+        </property>
+        <property id="module.framework.sf_crypto_signature.key_type" display="Key type (Byte Pool size in sf_crypto must be >= 1450bytes)" default="module.framework.sf_crypto_signature.key_type.rsa_plain_text">
+            <option display="RSA Plain text" id="module.framework.sf_crypto_signature.key_type.rsa_plain_text" value="SF_CRYPTO_KEY_TYPE_RSA_PLAIN_TEXT"/>
+            <option display="RSA CRT Plain text" id="module.framework.sf_crypto_signature.key_type.rsa_crt_plain_text" value="SF_CRYPTO_KEY_TYPE_RSA_CRT_PLAIN_TEXT"/>
+            <option display="RSA Wrapped" id="module.framework.sf_crypto_signature.key_type.rsa_wrapped" value="SF_CRYPTO_KEY_TYPE_RSA_WRAPPED"/>
+        </property>
+        <property id="module.framework.sf_crypto_signature.key_size" display="Key size" default="module.framework.sf_crypto_signature.key_size.rsa_2048b">
+            <option display="RSA 1024-bits" id="module.framework.sf_crypto_signature.key_size.rsa_1024b" value="SF_CRYPTO_KEY_SIZE_RSA_1024"/>
+            <option display="RSA 2048-bits" id="module.framework.sf_crypto_signature.key_size.rsa_2048b" value="SF_CRYPTO_KEY_SIZE_RSA_2048"/>
+        </property>
+        <property default="sf_crypto_signature_init${_instance}" display="Name of generated initialization function" id="module.framework.sf_crypto_signature.init_function">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_crypto_signature.init_function}")</constraint>
+        </property>
+        <property default="module.framework.sf_crypto_signature.init.enable" display="Auto Initialization" id="module.framework.sf_crypto_signature.init">
+            <option display="Enable"  id="module.framework.sf_crypto_signature.init.enable"  value="1"/>
+            <option display="Disable" id="module.framework.sf_crypto_signature.init.disable" value="0"/>
+        </property>
+        <header>
+            extern sf_crypto_signature_instance_t ${module.framework.sf_crypto_signature.name};
+            void ${module.framework.sf_crypto_signature.name}_err_callback(void * p_instance, void * p_data);
+            void ${module.framework.sf_crypto_signature.init_function}(void);
+        </header>
+        <includes>
+            #include &quot;sf_crypto_signature.h&quot;
+        </includes>
+        <declarations>
+            #if defined(__ICCARM__)
+            #define ${module.framework.sf_crypto_signature.name}_err_callback_WEAK_ATTRIBUTE
+            #pragma weak ${module.framework.sf_crypto_signature.name}_err_callback  = ${module.framework.sf_crypto_signature.name}_err_callback_internal
+            #elif defined(__GNUC__)
+            #define ${module.framework.sf_crypto_signature.name}_err_callback_WEAK_ATTRIBUTE __attribute__ ((weak, alias("${module.framework.sf_crypto_signature.name}_err_callback_internal")))
+            #endif
+            void ${module.framework.sf_crypto_signature.name}_err_callback(void * p_instance, void * p_data) ${module.framework.sf_crypto_signature.name}_err_callback_WEAK_ATTRIBUTE;
+
+            #if (${module.framework.sf_crypto_signature.requires.sf_crypto::module.framework.sf_crypto.memory_pool_size} &lt; MIN_MEMORY_POOL_SIZE)
+            #error  "Default Byte Pool size must be greater than or equal to 1450-Bytes"
+            #undef MIN_MEMORY_POOL_SIZE
+            #endif /* End of memory pool size condition */
+            
+            /* Control block for ${module.framework.sf_crypto_signature.name}. */
+            sf_crypto_signature_instance_ctrl_t ${module.framework.sf_crypto_signature.name}_ctrl;
+
+            /* Configuration structure for ${module.framework.sf_crypto_signature.name}. */
+            sf_crypto_signature_cfg_t ${module.framework.sf_crypto_signature.name}_cfg =
+            {
+                .key_type                     = ${module.framework.sf_crypto_signature.key_type},
+                .key_size                     = ${module.framework.sf_crypto_signature.key_size},
+                .p_lower_lvl_sf_crypto_hash   = (sf_crypto_hash_instance_t *)&amp;${module.framework.sf_crypto_signature.requires.sf_crypto_hash::module.framework.sf_crypto_hash.name},
+                .p_lower_lvl_crypto_common    = (sf_crypto_instance_t *)&amp;${module.framework.sf_crypto_signature.requires.sf_crypto::module.framework.sf_crypto.name}, 
+                .p_extend                     = NULL, 
+
+            };
+
+            /* Instance structure for ${module.framework.sf_crypto_signature.name}. */
+            sf_crypto_signature_instance_t ${module.framework.sf_crypto_signature.name} = 
+            {
+                .p_ctrl = &amp;${module.framework.sf_crypto_signature.name}_ctrl,
+                .p_cfg  = &amp;${module.framework.sf_crypto_signature.name}_cfg,
+                .p_api  = &amp;g_sf_crypto_signature_on_sf_crypto_signature
+            };
+
+            /*******************************************************************************************************************//**
+            * @brief      This is a weak example initialization error function.  It should be overridden by defining a user  function 
+            *             with the prototype below.
+            *             - void ${module.framework.sf_crypto_signature.name}_err_callback(void * p_instance, void * p_data)
+            *
+            * @param[in]  p_instance arguments used to identify which instance caused the error and p_data Callback arguments used to identify what error caused the callback.
+            **********************************************************************************************************************/
+            void ${module.framework.sf_crypto_signature.name}_err_callback_internal(void * p_instance, void * p_data);
+            void ${module.framework.sf_crypto_signature.name}_err_callback_internal(void * p_instance, void * p_data)
+            {
+                /** Suppress compiler warning for not using parameters. */
+                SSP_PARAMETER_NOT_USED(p_instance);
+                SSP_PARAMETER_NOT_USED(p_data);
+
+                /** An error has occurred. Please check function arguments for more information. */
+                BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+            }
+			
+            /*******************************************************************************************************************//**
+            * @brief     Initialization function that the user can choose to have called automatically during thread entry.
+            *            The user can call this function at a later time if desired using the prototype below.
+            *            - void ${module.framework.sf_crypto_signature.init_function}(void)
+            **********************************************************************************************************************/
+            void ${module.framework.sf_crypto_signature.init_function}(void)
+            {
+                ssp_err_t ssp_err_${module.framework.sf_crypto_signature.name};
+                ssp_err_${module.framework.sf_crypto_signature.name} = ${module.framework.sf_crypto_signature.name}.p_api->open(${module.framework.sf_crypto_signature.name}.p_ctrl, ${module.framework.sf_crypto_signature.name}.p_cfg);
+                if (SSP_SUCCESS != ssp_err_${module.framework.sf_crypto_signature.name})
+                {
+                    ${module.framework.sf_crypto_signature.name}_err_callback((void *)&amp;${module.framework.sf_crypto_signature.name},&amp;ssp_err_${module.framework.sf_crypto_signature.name});
+                }
+            }
+        </declarations>
+        <init>
+            /** Call initialization function for ${module.framework.sf_crypto_signature.name}. */
+            #if (${module.framework.sf_crypto_signature.init})
+            /** Call initialization function if user has selected to do so. */
+            ${module.framework.sf_crypto_signature.init_function}();
+            #endif
+        </init>
+    </module>
+</synergyModuleDescription>
