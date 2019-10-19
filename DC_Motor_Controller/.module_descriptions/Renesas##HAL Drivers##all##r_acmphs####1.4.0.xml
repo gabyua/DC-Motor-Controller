@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+<synergyModuleDescription>
+    <config id="config.driver.acmphs" path="ssp_cfg/driver/r_acmphs_cfg.h" version="0">
+        <property default="config.driver.acmphs.param_checking_enable.bsp" display="Parameter Checking" id="config.driver.acmphs.param_checking_enable" description="If selected code for parameter checking is included in the build.">
+            <option display="Default (BSP)" id="config.driver.acmphs.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled" id="config.driver.acmphs.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled" id="config.driver.acmphs.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>#define ACMPHS_CFG_PARAM_CHECKING_ENABLE ${config.driver.acmphs.param_checking_enable}
+</content>
+    </config>
+    <module config="config.driver.acmphs" display="Driver|Analog|${module.driver.comparator.name} Comparator Driver on r_acmphs" id="module.driver.comparator_on_acmphs" version="1">
+        <constraint display="Unique name required for each instance">
+            ("${interface.driver.comparator.${module.driver.comparator.name}}" === "1")
+        </constraint>
+        <constraint display="Requires ACMPHS peripheral">
+          "${interface.mcu.acmphs}" === "1"
+        </constraint>
+        <requires id="interface.driver.comparator.requires.mcu" visible="false" interface="interface.mcu.s1ja" display="Requires S1JA MCU"/>
+        <requires id="interface.driver.comparator.requires.acmphs" visible="false" interface="interface.mcu.acmphs" display="Requires ACMPHS peripheral" />
+        <provides interface="interface.driver.comparator" />
+        <provides interface="interface.driver.comparator_on_acmphs" />
+        <provides interface="interface.driver.comparator.${module.driver.comparator.name}" />
+        <provides interface="interface.driver.comparator_on_acmphs.${module.driver.comparator.channel}" />
+        <property default="g_comparator${_instance}" display="Name" id="module.driver.comparator.name" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.comparator.name}")</constraint>
+        </property>
+        <property default="0" display="Channel" id="module.driver.comparator.channel" description="Select the hardware channel.">
+            <constraint display="Value must be a non-negative integer">testInteger("${module.driver.comparator.channel}")  &amp;&amp; ("${module.driver.comparator.channel}" &gt;= 0)</constraint>
+        </property>
+        <property default="module.driver.comparator.trigger.trigger_both_edge" display="Trigger Edge" id="module.driver.comparator.trigger" description="The trigger specifies when a comparator callback event should occur.  Unused if the interrupt priority is disabled or the callback is NULL.">
+            <option display="Rising" id="module.driver.comparator.trigger.trigger_rising" value="COMPARATOR_TRIGGER_RISING"/>
+            <option display="Falling" id="module.driver.comparator.trigger.trigger_falling" value="COMPARATOR_TRIGGER_FALLING"/>
+            <option display="Both Edge" id="module.driver.comparator.trigger.trigger_both_edge" value="COMPARATOR_TRIGGER_BOTH_EDGE"/>
+        </property>
+        <property default="module.driver.comparator.filter.filter_off" display="Debounce Filter" id="module.driver.comparator.filter" description="Select the PCLK divisor for the hardware digital debounce filter. Larger divisors provide a longer debounce and take longer for the output to update.">
+            <option display="No Filter" id="module.driver.comparator.filter.filter_off" value="COMPARATOR_FILTER_OFF"/>
+            <option display="8" id="module.driver.comparator.filter.filter_8" value="COMPARATOR_FILTER_8"/>
+            <option display="16" id="module.driver.comparator.filter.filter_16" value="COMPARATOR_FILTER_16"/>
+            <option display="32" id="module.driver.comparator.filter.filter_32" value="COMPARATOR_FILTER_32"/>
+        </property>
+        <property default="module.driver.comparator.invert.polarity_invert_off" display="Invert" id="module.driver.comparator.invert" description="Turn this on to invert the comparator output. This affects the output read from statusGet(), the pin output level, and the edge trigger.">
+            <option display="Not Inverted" id="module.driver.comparator.invert.polarity_invert_off" value="COMPARATOR_POLARITY_INVERT_OFF"/>
+            <option display="Inverted" id="module.driver.comparator.invert.polarity_invert_on" value="COMPARATOR_POLARITY_INVERT_ON"/>
+        </property>
+        <property default="module.driver.comparator.pin_output.pin_output_off" display="Pin Output" id="module.driver.comparator.pin_output" description="Turn this on to include the output from this comparator on VCOUT.  The comparator output on VCOUT is OR'd with output from all other ACMPHS and ACMPLP comparators.">
+            <option display="Disabled" id="module.driver.comparator.pin_output.pin_output_off" value="COMPARATOR_PIN_OUTPUT_OFF"/>
+            <option display="Enabled" id="module.driver.comparator.pin_output.pin_output_on" value="COMPARATOR_PIN_OUTPUT_ON"/>
+        </property>
+        <property default="NULL" display="Callback" id="module.driver.comparator.p_callback" description="Define this function in the application. It is called when the Trigger event occurs.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.comparator.p_callback}")</constraint>
+        </property>
+        <property default="" display="Comparator Interrupt Priority" id="module.driver.comparator.irq_ipl" description="Select the interrupt priority for the comparator interrupt.">
+            <select enum="enum.mcu.nvic.priorities.optional"/>
+        </property>
+        <header>
+/** Comparator Instance. */
+extern const comparator_instance_t ${module.driver.comparator.name};
+        </header>
+        <includes>
+#include &quot;r_acmphs.h&quot;
+#include &quot;r_comparator_api.h&quot;
+        </includes>
+        <declarations>
+acmphs_instance_ctrl_t ${module.driver.comparator.name}_ctrl;
+const comparator_cfg_t ${module.driver.comparator.name}_cfg =
+{
+    .channel             = ${module.driver.comparator.channel},
+    .mode                = COMPARATOR_MODE_NORMAL,
+    .trigger             = ${module.driver.comparator.trigger},
+    .filter              = ${module.driver.comparator.filter},
+    .invert              = ${module.driver.comparator.invert},
+    .pin_output          = ${module.driver.comparator.pin_output},
+    .irq_ipl             = ${module.driver.comparator.irq_ipl},
+    .p_callback          = ${module.driver.comparator.p_callback},
+    .p_context           = &amp;${module.driver.comparator.name},
+    .p_extend            = NULL,
+};
+/* Instance structure to use this module. */
+const comparator_instance_t ${module.driver.comparator.name} = 
+{
+    .p_ctrl        = &amp;${module.driver.comparator.name}_ctrl,
+    .p_cfg         = &amp;${module.driver.comparator.name}_cfg,
+    .p_api         = &amp;g_comparator_on_acmphs
+};
+</declarations>
+    </module>
+</synergyModuleDescription>

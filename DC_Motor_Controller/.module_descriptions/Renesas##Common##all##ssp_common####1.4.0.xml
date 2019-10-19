@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<synergyModuleDescription>
+    <config id="config.bsp.synergy" path="ssp_cfg/bsp/bsp_cfg.h" version="0">
+        <property id="config.bsp.common.main" display="Main stack size (bytes)" default="0x1000" macro="BSP_CFG_STACK_MAIN_BYTES">
+            <constraint display="Value must be an integer multiple of 8 and between 8 and 0xFFFFFFFF">testInteger("${config.bsp.common.main}")  &amp;&amp; ("${config.bsp.common.main}" &gt; 0) &amp;&amp; ("${config.bsp.common.main}" % 8 == 0)&amp;&amp; 
+            ("${config.bsp.common.main}" &lt;= 0xFFFFFFFF)</constraint>
+        </property>
+        <property id="config.bsp.common.process" display="Process stack size (bytes)" default="0" macro="BSP_CFG_STACK_PROCESS_BYTES">
+            <constraint display="Value must be 0 or an integer multiple of 8 between 8 and 0xFFFFFFFF">testInteger("${config.bsp.common.process}")  &amp;&amp; ("${config.bsp.common.process}" &gt;= 0) &amp;&amp; ("${config.bsp.common.process}" % 8 == 0)&amp;&amp; 
+            ("${config.bsp.common.process}" &lt;= 0xFFFFFFFF)</constraint>			
+        </property>
+        <property id="config.bsp.common.heap" display="Heap size (bytes) - A minimum of 4K (0x1000) is required if standard library functions are to be used." default="0x1000" macro="BSP_CFG_HEAP_BYTES">
+            <constraint display="Value must be 0 or an integer multiple of 8 between 8 and 0xFFFFFFFF. A minimum of 4K (0x1000) is required if standard library functions are to be used.">testInteger("${config.bsp.common.heap}")  &amp;&amp; ("${config.bsp.common.heap}" &gt;= 0) &amp;&amp; ("${config.bsp.common.heap}" % 8 == 0)&amp;&amp; 
+            ("${config.bsp.common.heap}" &lt;= 0xFFFFFFFF)</constraint>						
+        </property>		
+        <property id="config.bsp.common.vcc" display="MCU Vcc (mV)" default="3300" macro="BSP_CFG_MCU_VCC_MV">
+            <constraint display="Value must between 0 and 4600 (4.6V)">testInteger("${config.bsp.common.vcc}") &amp;&amp; ("${config.bsp.common.vcc}" &gt;= 0) &amp;&amp; ("${config.bsp.common.vcc}" &lt;= 4600)</constraint>
+        </property>
+        <property id="config.bsp.common.checking" display="Parameter checking" default="config.bsp.common.checking.enabled">
+            <option id="config.bsp.common.checking.enabled" display="Enabled" value="1" />
+            <option id="config.bsp.common.checking.disabled" display="Disabled" value="0" />
+        </property>
+        <property id="config.bsp.common.assert" display="Assert Failures" default="config.bsp.common.assert.none">
+            <option id="config.bsp.common.assert.none" display="Return SSP_ERR_ASSERTION" value="0" />
+            <option id="config.bsp.common.assert.ssp_error_log" display="Call ssp_error_log then Return SSP_ERR_ASSERTION" value="1" />
+            <option id="config.bsp.common.assert.assert" display="Use assert() to Halt Execution" value="2" />
+        </property>
+        <property id="config.bsp.common.error_log" display="Error Log" default="config.bsp.common.error_log.none">
+            <option id="config.bsp.common.error_log.none" display="No Error Log" value="0" />
+            <option id="config.bsp.common.error_log.ssp_error_log" display="Errors Logged in ssp_error_log" value="1" />
+        </property>
+        <property id="config.bsp.common.id_mode" default="config.bsp.common.id_mode.unlocked" display="ID Code Mode">
+            <option id="config.bsp.common.id_mode.unlocked" display="Unlocked (Ignore ID)" value="0xFFFFFFFF" />
+            <option id="config.bsp.common.id_mode.enabled_all_erase" display="Locked with All Erase support" value="0xC0000000" />
+            <option id="config.bsp.common.id_mode.enabled_no_all_erase" display="Locked" value="0x80000000" />
+        </property>
+        <property id="config.bsp.common.id_code" display="ID Code (32 Hex Characters)" default="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF">
+        <constraint display="Value must be a 32 character long hex string" >"${config.bsp.common.id_code}".length == 32</constraint>
+        </property>
+        <property id="config.bsp.common.id1" default="" macro="BSP_CFG_ID_CODE_LONG_1">
+            <export>eval(' \
+            value = ("${config.bsp.common.id_mode}" == "0xFFFFFFFF") ? "FFFFFFFF" : ("${config.bsp.common.id_code}" + "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF").substring(0, 8), \
+            /* convert to little endian */ \
+            value.substring(6, 8) + value.substring(4, 6) + value.substring(2, 4) + value.substring(0, 2) \
+            ')</export>
+        </property>
+        <property id="config.bsp.common.id2" default="" macro="BSP_CFG_ID_CODE_LONG_2">
+            <export>eval(' \
+            value = ("${config.bsp.common.id_mode}" == "0xFFFFFFFF") ? "FFFFFFFF" : ("${config.bsp.common.id_code}" + "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF").substring(8, 16), \
+            /* convert to little endian */ \
+            value.substring(6, 8) + value.substring(4, 6) + value.substring(2, 4) + value.substring(0, 2) \
+            ')</export>
+        </property>
+        <property id="config.bsp.common.id3" default="" macro="BSP_CFG_ID_CODE_LONG_3">
+            <export>eval(' \
+            value = ("${config.bsp.common.id_mode}" == "0xFFFFFFFF") ? "FFFFFFFF" : ("${config.bsp.common.id_code}" + "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF").substring(16, 24), \
+            /* convert to little endian */ \
+            value.substring(6, 8) + value.substring(4, 6) + value.substring(2, 4) + value.substring(0, 2) \
+            ')</export>
+        </property>
+        <property id="config.bsp.common.id4" default="" macro="BSP_CFG_ID_CODE_LONG_4">
+            <export>eval(' \
+            value = ("${config.bsp.common.id_mode}" == "0xFFFFFFFF") ? "FFFFFFFF" : ("${config.bsp.common.id_code}" + "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF").substring(24, 32), \
+            high_id_byte = parseInt(value.substring(6, 8), 16), \
+            high_mode_byte = parseInt(("${config.bsp.common.id_mode}").substring(2, 4), 16), \
+            high_byte = ((high_id_byte &amp; 0x3F) | high_mode_byte).toString(16), \
+            /* convert to little endian */ \
+            high_byte + value.substring(4, 6) + value.substring(2, 4) + value.substring(0, 2)')</export>
+        </property>
+        <property id="config.bsp.common.id_fixed" default="">
+            <export>eval(' \
+                value = ("${config.bsp.common.id_code}" + "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"), \
+                low_bytes = value.substring(0,30), \
+                high_id_byte = parseInt(value.substring(29, 32), 16), \
+                high_mode_byte = parseInt(("${config.bsp.common.id_mode}").substring(2, 4), 16), \
+                /* add 0x100 to force string to be padded */ \
+                high_byte = (0x100 + ((high_id_byte &amp; 0x3F) | high_mode_byte)).toString(16).substring(1,3), \
+                ("${config.bsp.common.id_mode}" == "0xFFFFFFFF") ? "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" : low_bytes + high_byte')</export>
+        </property>
+        <content>
+            #include "bsp_clock_cfg.h"
+            #include "bsp_mcu_family_cfg.h"
+            #include "bsp_board_cfg.h"
+            #define SYNERGY_NOT_DEFINED 0
+            #if (SYNERGY_NOT_DEFINED) == (${interface.framework.tx})
+            #define BSP_CFG_RTOS (0)
+            #else
+            #define BSP_CFG_RTOS (1)
+            #endif
+            #undef SYNERGY_NOT_DEFINED
+            #define BSP_CFG_MCU_VCC_MV (${config.bsp.common.vcc})
+            #define BSP_CFG_STACK_MAIN_BYTES (${config.bsp.common.main})
+            #define BSP_CFG_STACK_PROCESS_BYTES (${config.bsp.common.process})
+            #define BSP_CFG_HEAP_BYTES (${config.bsp.common.heap})
+            #define BSP_CFG_PARAM_CHECKING_ENABLE (${config.bsp.common.checking})
+            #define BSP_CFG_ASSERT (${config.bsp.common.assert})
+            #define BSP_CFG_ERROR_LOG (${config.bsp.common.error_log})
+
+            /*
+            ID Code
+            Note: To permanently lock and disable the debug interface define the BSP_ID_CODE_PERMANENTLY_LOCKED in the compiler settings.
+            WARNING: This will disable debug access to the part and cannot be reversed by a debug probe. 
+            */
+            #if defined(BSP_ID_CODE_PERMANENTLY_LOCKED)
+            #define BSP_CFG_ID_CODE_LONG_1 (0x00000000)
+            #define BSP_CFG_ID_CODE_LONG_2 (0x00000000)
+            #define BSP_CFG_ID_CODE_LONG_3 (0x00000000)
+            #define BSP_CFG_ID_CODE_LONG_4 (0x00000000)
+            #else
+            /* ID CODE: ${config.bsp.common.id_fixed} */
+            #define BSP_CFG_ID_CODE_LONG_1 (0x${config.bsp.common.id1})
+            #define BSP_CFG_ID_CODE_LONG_2 (0x${config.bsp.common.id2})
+            #define BSP_CFG_ID_CODE_LONG_3 (0x${config.bsp.common.id3})
+            #define BSP_CFG_ID_CODE_LONG_4 (0x${config.bsp.common.id4})
+            #endif
+        </content>
+    </config>
+
+  <bsp id="bsp.synergy" config="config.bsp.synergy" display="Synergy Common" version="0">
+
+  </bsp>
+</synergyModuleDescription>

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+    <config id="config.framework.sf_crypto" path="ssp_cfg/framework/sf_crypto_cfg.h" version="0">
+        <property default="config.framework.sf_crypto.param_checking_enable.bsp" display="Parameter Checking" id="config.framework.sf_crypto.param_checking_enable" description="Selects if code for parameter checking is to be included in the build.">
+            <option display="Default (BSP)" id="config.driver.sf_crypto.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled"       id="config.framework.sf_crypto.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled"      id="config.framework.sf_crypto.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content
+            >#define SF_CRYPTO_CFG_PARAM_CHECKING_ENABLE ${config.framework.sf_crypto.param_checking_enable}
+        </content>
+    </config>
+    <module config="config.framework.sf_crypto" display="Framework|Crypto|${module.framework.sf_crypto.name} Crypto Framework on sf_crypto" id="module.framework.sf_crypto" common = "1" version="1" url="http://knowledgebase.renesas.com/English_Content/Renesas_Synergy%E2%84%A2_Platform/Renesas_Synergy_Knowledge_Base/sf_crypto_Module_Guide_Resources">
+        <constraint display="Module instances must have unique names">
+            "${interface.framework.sf_crypto.${module.framework.sf_crypto.name}}" === "1"
+        </constraint>
+        <requires interface="_rtos" />
+        <requires id="module.framework.sf_crypto.requires.cripto_hw" interface="interface.driver.sce" display="Add Crypto Engine Driver">
+            <override property="module.driver.sce.endian_flag" value="module.driver.sce.endian_flag.little_endian"/>
+        </requires>
+        <provides interface="interface.framework.sf_crypto" />
+        <provides interface="interface.framework.sf_crypto.${module.framework.sf_crypto.name}" />
+
+        <property default="g_sf_crypto${_instance}" display="Name" id="module.framework.sf_crypto.name" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_crypto.name}")</constraint>
+        </property>
+        <property default="TX_WAIT_FOREVER" display="Wait time" id="module.framework.sf_crypto.wait_option" description="Specify the wait time in ThreadX ticks.">
+            <constraint display="Value must be a non-negative integer">testInteger("${module.framework.sf_crypto.wait_option}") &amp;&amp; ("${module.framework.sf_crypto.wait_option}" &gt; 0)</constraint>
+        </property>
+        <property default="128" display="Byte Pool Size" id="module.framework.sf_crypto.memory_pool_size" description="Specify the size of the byte pool in bytes.">
+            <constraint display="Value must be a non-negative integer">testInteger("${module.framework.sf_crypto.memory_pool_size}") &amp;&amp; ("${module.framework.sf_crypto.memory_pool_size}" &gt; 0)</constraint>
+        </property>
+        <property default="module.framework.sf_crypto.init.enable" display="Auto Initialization" id="module.framework.sf_crypto.init" description="Select if sf_crypto will be initialized during startup.">
+            <option display="Enable"  id="module.framework.sf_crypto.init.enable"  value="1"/>
+            <option display="Disable" id="module.framework.sf_crypto.init.disable" value="0"/>
+        </property>
+        <property default="module.framework.sf_crypto.close_option.default" display="Force Closure Support" id="module.framework.sf_crypto.close_option" description="Select Force Close to close the crypto module regardless of the status of submodules.">
+            <option display="Default"     id="module.framework.sf_crypto.close_option.default" value="SF_CRYPTO_CLOSE_OPTION_DEFAULT"/>
+            <option display="Force Close" id="module.framework.sf_crypto.close_option.enable"  value="SF_CRYPTO_CLOSE_OPTION_FORCE_CLOSE"/>
+        </property>
+        <header>
+            extern const sf_crypto_instance_t ${module.framework.sf_crypto.name};
+        </header>
+        <includes>#include &quot;sf_crypto.h&quot;
+            #include &quot;sf_crypto_api.h&quot;</includes>
+        <declarations>
+
+            /** Work memory to store Crypto HAL context for algorithm modules. */
+            static unsigned char    ${module.framework.sf_crypto.name}_memory_pool[${module.framework.sf_crypto.memory_pool_size}+4] = {0};
+
+            /* Crypto Common Framework Control Block for ${module.framework.sf_crypto.name}. */
+            sf_crypto_instance_ctrl_t ${module.framework.sf_crypto.name}_ctrl;
+
+            /* Crypto Common Framework Configuration for ${module.framework.sf_crypto.name}. */
+            const sf_crypto_cfg_t ${module.framework.sf_crypto.name}_cfg =
+            {
+                .wait_option        = ${module.framework.sf_crypto.wait_option},
+                .p_lower_lvl_crypto = (crypto_instance_t *)&amp;${module.framework.sf_crypto.requires.cripto_hw::module.driver.sce.name},
+                .p_extend           = NULL,
+                .p_context          = NULL,
+                .p_memory_pool      = ${module.framework.sf_crypto.name}_memory_pool,
+                .memory_pool_size   = ${module.framework.sf_crypto.memory_pool_size},
+                .close_option       = ${module.framework.sf_crypto.close_option},
+            };
+
+            /* Crypto Common Framework Instance for ${module.framework.sf_crypto.name}. */
+            const sf_crypto_instance_t ${module.framework.sf_crypto.name} = 
+            {
+                .p_ctrl        = &amp;${module.framework.sf_crypto.name}_ctrl,
+                .p_cfg         = &amp;${module.framework.sf_crypto.name}_cfg,
+                .p_api         = &amp;g_sf_crypto_api
+            };
+        </declarations>
+        <init>
+            /* Open Crypto Common Framework. */
+            ssp_err_t ssp_err_${module.framework.sf_crypto.name};
+            ssp_err_${module.framework.sf_crypto.name} = ${module.framework.sf_crypto.name}.p_api->open(${module.framework.sf_crypto.name}.p_ctrl, ${module.framework.sf_crypto.name}.p_cfg);
+            if (SSP_SUCCESS != ssp_err_${module.framework.sf_crypto.name})
+            {
+                BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+            }
+        </init>
+    </module>
+</synergyModuleDescription>
