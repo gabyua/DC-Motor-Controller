@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<synergyModuleDescription>
+    <config id="config.el.gx_src" path="ssp_cfg/framework/el/gx_src_user.h" version="0">
+        <property default="" display="GUIX Stack Size" id="config.el.gx_src.stack_size" description="GUIX internal thread stack size in bytes. Must be greater than zero or empty.">
+            <constraint display="Value must be greater than or zero or empty">("${config.el.gx_src.stack_size}".length === 0) || ("${config.el.gx_src.stack_size}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="GUIX System Timer (Milliseconds)" id="config.el.gx_src.system_timer_ms" description="GUIX system timer. Must be a multiple of TX_TIMER_TICKS_PER_SECOND or empty.">
+            <constraint display="Value must be greater than or equal to 10 or empty">("${config.el.gx_src.system_timer_ms}".length === 0) || ("${config.el.gx_src.system_timer_ms}" &gt; 9)</constraint>
+        </property>
+        <property default="" display="GUIX Timer Rate" id="config.el.gx_src.system_timer_ticks" description="GUIX timer rate as a multiple of the ThreadX tick interrupt rate. Must be greater than zero or empty.">
+            <constraint display="Value must be greater than or zero or empty">("${config.el.gx_src.system_timer_ticks}".length === 0) || ("${config.el.gx_src.system_timer_ticks}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="GUIX Ticks per Second" id="config.el.gx_src.ticks_second" description="Useful for application logic, must correlate with the GX_SYSTEM_TIMER_TICKS definition. This is not used by GUIX but for user applications. Must be greater than zero or empty.">
+            <constraint display="Value must be greater than or zero or empty">("${config.el.gx_src.ticks_second}".length === 0) || ("${config.el.gx_src.ticks_second}" &gt; 0)</constraint>
+        </property>
+        <property id="config.el.gx_src.disable_multithread_support" display="Disable Multithread Support" default="config.el.gx_src.disable_multithread_support.no" description="If your application has only one thread which utilizes the GUI API services, say yes to reduce system overhead.">
+            <option id="config.el.gx_src.disable_multithread_support.yes" display="Yes" value="1" />
+            <option id="config.el.gx_src.disable_multithread_support.no"  display="No(default)" value="0" />
+        </property>
+        <property id="config.el.gx_src.disable_utf8_support" display="Disable UTF8 Support" default="config.el.gx_src.disable_utf8_support.no" description="GUIX disables UTF8 support if you say yes.">
+            <option id="config.el.gx_src.disable_utf8_support.yes" display="Yes" value="1" />
+            <option id="config.el.gx_src.disable_utf8_support.no"  display="No(default)" value="0" />
+        </property>
+        <property default="" display="GUIX Event Queue Size" id="config.el.gx_src.max_queue_events" description="Size of GUIX Event Queue Size. Must be greater than zero or empty.">
+            <constraint display="Value must be greater than or zero or empty">("${config.el.gx_src.max_queue_events}".length === 0) || ("${config.el.gx_src.max_queue_events}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="GUIX Thread Priority" id="config.el.gx_src.thread_priority" description="Priority of GUIX Internal Thread. The value must be between 0 to 31.">
+            <constraint display="Value must be between 0 to 31, or empty">(("${config.el.gx_src.thread_priority}" &gt;= 0) &amp;&amp; ("${config.el.gx_src.thread_priority}" &lt;= 31))</constraint>
+        </property>
+        <property default="10" display="GUIX Thread Time Slice" id="config.el.gx_src.thread_time_slice" description="Time Slice value of GUIX Internal Thread. The value must be between 0(TX_NO_TIME_SLICE) to 0xFFFFFFFF.">
+            <constraint display="Value must be a non-negative integer">(testInteger("${config.el.gx_src.thread_time_slice}") &amp;&amp; ("${config.el.gx_src.thread_time_slice}" &gt;= 0))</constraint>
+        </property>
+        <property id="config.el.gx_src.widget_user_data" display="Use User Data Field in GX_WIDGET Structure" default="config.el.gx_src.widget_user_data.no" description="GUIX allows users to use gx_widget_user_data member in GX_WIDGET Structure if you say yes.">
+            <option id="config.el.gx_src.widget_user_data.yes" display="Yes" value="1" />
+            <option id="config.el.gx_src.widget_user_data.no"  display="No(default)" value="0" />
+        </property>
+        <content>
+#if (${config.el.gx_src.stack_size}+0)
+#define GX_THREAD_STACK_SIZE (${config.el.gx_src.stack_size}+0)
+#endif
+#if (${config.el.gx_src.system_timer_ms}+0)
+#define GX_SYSTEM_TIMER_MS (${config.el.gx_src.system_timer_ms}+0)
+#endif
+#if (${config.el.gx_src.system_timer_ticks}+0)
+#define GX_SYSTEM_TIMER_TICKS (${config.el.gx_src.system_timer_ticks}+0)
+#endif
+#if (${config.el.gx_src.ticks_second}+0)
+#define GX_TICKS_SECOND (${config.el.gx_src.ticks_second}+0)
+#endif
+#if (${config.el.gx_src.disable_multithread_support})
+#define GUIX_DISABLE_MULTITHREAD_SUPPORT
+#endif
+#if (${config.el.gx_src.disable_utf8_support})
+#define GX_DISABLE_UTF8_SUPPORT
+#endif
+#if (${config.el.gx_src.max_queue_events}+0)
+#define GX_MAX_QUEUE_EVENTS (${config.el.gx_src.max_queue_events}+0)
+#endif
+#define GX_SYSTEM_THREAD_PRIORITY (${config.el.gx_src.thread_priority}+0)
+#define GX_SYSTEM_THREAD_TIMESLICE (${config.el.gx_src.thread_time_slice}+0)
+#if (${config.el.gx_src.widget_user_data})
+#define GX_WIDGET_USER_DATA
+#endif
+
+        </content>
+    </config>
+    <module config="config.el.gx_src" id="module.el.gx_src" display="X-Ware|GUIX|GUIX Source" common="1" version="0">
+        <!-- Remove this warning when a proper fix is implemented to remove the library when source component is added -->
+        <constraint display="Refer to release notes if multiple symbol definition linkage error occurs">
+            "${module.el.gx_src.linkage_warning}" === "module.el.gx_src.linkage_warning.disabled"
+        </constraint>
+
+        <requires interface="_rtos" />
+        <provides interface="interface.el.gx_src" />
+
+        <!-- Remove this warning when a proper fix is implemented to remove the library when source component is added -->
+        <property default="module.el.gx_src.linkage_warning.enabled" display="Show linkage warning" id="module.el.gx_src.linkage_warning">
+            <option display="Enabled" id="module.el.gx_src.linkage_warning.enabled" value="0"/>
+            <option display="Disabled" id="module.el.gx_src.linkage_warning.disabled" value="1"/>
+        </property>
+    </module>
+</synergyModuleDescription>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<synergyModuleDescription>
+  <config id="config.board.s1ja_tb" path="ssp_cfg/bsp/bsp_board_cfg.h" version="0">
+    <content>#include "../../../synergy/board/s1ja_tb/bsp.h"</content>
+  </config>
+  <board config="config.board.s1ja_tb" device="R7FS1JA783A01CFM" display="S1JA TB" id="board.s1ja_tb" version="0"/>
+</synergyModuleDescription>

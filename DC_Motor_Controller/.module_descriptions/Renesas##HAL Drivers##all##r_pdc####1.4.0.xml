@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+<!-- PDC XML START here-->
+    <config id="config.driver.pdc" path="ssp_cfg/driver/r_pdc_cfg.h" version="0">
+        <property default="config.driver.pdc.param_checking_enable.bsp" display="Parameter Checking" id="config.driver.pdc.param_checking_enable" description="If selected code for parameter checking is included in the build.">
+            <option display="Default (BSP)" id="config.driver.pdc.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled" id="config.driver.pdc.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled" id="config.driver.pdc.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>#define PDC_CFG_PARAM_CHECKING_ENABLE ${config.driver.pdc.param_checking_enable}
+        </content>
+    </config>
+    <module config="config.driver.pdc" display="Driver|Graphics|${module.driver.pdc.name} PDC Driver on r_pdc" id="module.driver.pdc_on_pdc" version="1" url="http://knowledgebase.renesas.com/English_Content/Renesas_Synergy%E2%84%A2_Platform/Renesas_Synergy_Knowledge_Base/r_pdc_Module_Guide_Resources">
+         <constraint display="Module instances must have unique names">
+            "${interface.driver.pdc.${module.driver.pdc.name}}" === "1"
+        </constraint>
+        <constraint display="Requires lower level transfer (dmac) driver">
+            testExists("${module.driver.pdc_on_pdc.requires.transfer::module.driver.transfer.name}")
+        </constraint>
+        <constraint display="Requires PDC Peripheral">
+          "${interface.mcu.pdc.external}" === "1"
+        </constraint>
+        <requires interface="interface.mcu.pdc.external" visible="false" display="Requires PDC Peripheral" />
+        <requires id="module.driver.pdc_on_pdc.requires.transfer" interface="interface.driver.transfer_on_dmac" display="Add DMAC Driver for Transmission">
+			<override property="module.driver.transfer.size" value= "module.driver.transfer.size.size_4_byte"/>
+			<override property="module.driver.transfer.mode" value= "module.driver.transfer.mode.mode_block"/>
+			<override property="module.driver.transfer.dest_addr_mode" value="module.driver.transfer.dest_addr_mode.addr_mode_incremented"/>
+			<override property="module.driver.transfer.src_addr_mode" value="module.driver.transfer.src_addr_mode.addr_mode_fixed"/>
+			<override property="module.driver.transfer.repeat_area" value="module.driver.transfer.repeat_area.repeat_area_source"/>
+			<override property="module.driver.transfer.p_dest" value="NULL"/>
+			<override property="module.driver.transfer.p_src" value="NULL"/>
+			<override property="module.driver.transfer.length" value="8"/>
+			<override property="module.driver.transfer.interrupt" value="module.driver.transfer.interrupt.interrupt_end"/>
+			<override property="module.driver.transfer.num_blocks" value="1"/>
+			<override property="module.driver.transfer.auto_enable" value="module.driver.transfer.auto_enable.false"/>
+			<override property="module.driver.transfer.p_callback" value="NULL"/>
+			<override property="module.driver.transfer.activation_source" value="module.driver.transfer.event.event_pdc_receive_data_ready"/>
+		</requires>
+        <provides interface="interface.driver.pdc" />
+        <provides interface="interface.driver.pdc_on_pdc" />
+        <provides interface="interface.driver.pdc.${module.driver.pdc.name}" />
+        <property id="module.driver.pdc.name" display="Name" default="g_pdc${_instance}" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.pdc.name}")</constraint>
+        </property>
+        <property id="module.driver.pdc.data_buffer" display="Name of the data buffer to store image data" default="g_user_buffer" description="Specify the name of the data buffer to create or set to NULL, if it is to be created by the user external to the PDC driver.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.pdc.data_buffer}")</constraint>
+        </property>
+        <property default="sdram" display="Section where data buffer is allocated" id="module.driver.pdc.section" description="Specify the RAM section for the image data buffer. Typically BSS (internal RAM) or SDRAM.">
+            <constraint display="This property must be a valid section name"> testSymbol("${module.driver.pdc.section}")
+            </constraint>
+        </property>
+        <property id="module.driver.pdc.bytes_per_pixel" display="Number of bytes per pixel" default="2" description="Specify the number of bytes per pixel of the captured image data.">
+            <constraint display="Value must be an integer greater than 0">testInteger("${module.driver.pdc.bytes_per_pixel}")  &amp;&amp; ("${module.driver.pdc.bytes_per_pixel}" &gt; 0)</constraint>
+        </property>
+        <property id="module.driver.pdc.number_of_buffers" display="Number of image data buffers" default="1" description="Specify the number of buffers to create.">
+            <constraint display="Value must be an integer greater than 0">testInteger("${module.driver.pdc.number_of_buffers}")  &amp;&amp; ("${module.driver.pdc.number_of_buffers}" &gt; 0)</constraint>
+        </property>
+        <property id="module.driver.pdc.clock_division" display="Clock divider" default="module.driver.pdc.clock_division.division_2" description="Specify the clock divider of the clock input to the PDC peripheral.">
+            <option display="CLK/2" id="module.driver.pdc.clock_division.division_2" value="PDC_CLOCK_DIVISION_2"/>
+            <option display="CLK/4" id="module.driver.pdc.clock_division.division_4" value="PDC_CLOCK_DIVISION_4"/>
+            <option display="CLK/6" id="module.driver.pdc.clock_division.division_6" value="PDC_CLOCK_DIVISION_6"/>
+            <option display="CLK/8" id="module.driver.pdc.clock_division.division_8" value="PDC_CLOCK_DIVISION_8"/>
+            <option display="CLK/10" id="module.driver.pdc.clock_division.division_10" value="PDC_CLOCK_DIVISION_10"/>
+            <option display="CLK/12" id="module.driver.pdc.clock_division.division_12" value="PDC_CLOCK_DIVISION_12"/>
+            <option display="CLK/14" id="module.driver.pdc.clock_division.division_14" value="PDC_CLOCK_DIVISION_14"/>
+            <option display="CLK/16" id="module.driver.pdc.clock_division.division_16" value="PDC_CLOCK_DIVISION_16"/>
+        </property>
+        <property id="module.driver.pdc.endian" display="Endian of image data" default="module.driver.pdc.endian.little" description="Specify the endianness of the captured image data.">
+            <option display="Little" id="module.driver.pdc.endian.little" value="PDC_ENDIAN_LITTLE"/>
+            <option display="Big" id="module.driver.pdc.endian.big" value="PDC_ENDIAN_BIG"/>
+        </property>
+        <property id="module.driver.pdc.hsync_polarity" display="HSYNC signal polarity" default="module.driver.pdc.hsync_polarity.high" description="Specify the active polarity of the HSYNC signal.">
+            <option display="High" id="module.driver.pdc.hsync_polarity.high" value="PDC_HSYNC_POLARITY_HIGH"/>
+            <option display="Low" id="module.driver.pdc.hsync_polarity.low" value="PDC_HSYNC_POLARITY_LOW"/>
+        </property>
+        <property id="module.driver.pdc.vsync_polarity" display="VSYNC signal polarity" default="module.driver.pdc.vsync_polarity.high" description="Specify the active polarity of the VSYNC signal.">
+            <option display="High" id="module.driver.pdc.vsync_polarity.high" value="PDC_VSYNC_POLARITY_HIGH"/>
+            <option display="Low" id="module.driver.pdc.vsync_polarity.low" value="PDC_VSYNC_POLARITY_LOW"/>
+        </property>
+        <property id="module.driver.pdc.x_pixels" display="Number of pixels to capture horizontally" default="640" description="Specify the number of horizontal pixels to capture.">
+            <constraint display="Value must be an integer greater than 0">testInteger("${module.driver.pdc.x_pixels}")  &amp;&amp; ("${module.driver.pdc.x_pixels}" &gt; 0)</constraint>
+        </property>
+        <property id="module.driver.pdc.y_pixels" display="Number of lines to capture vertically" default="480" description="Specify the number of vertical pixels to capture.">
+            <constraint display="Value must be an integer greater than 0">testInteger("${module.driver.pdc.y_pixels}")  &amp;&amp; ("${module.driver.pdc.y_pixels}" &gt; 0)</constraint>
+        </property>
+        <property id="module.driver.pdc.x_start_pixel" display="Horizontal pixel to start capture from" default="0" description="Specify the horizontal pixel to start capturing image data from. Allows an image smaller than the native resolution of a camera to be captured.">
+            <constraint display="Value must be an integer">testInteger("${module.driver.pdc.x_start_pixel}")</constraint>
+        </property>
+        <property id="module.driver.pdc.y_start_pixel" display="Line to start capture from" default="0" description="Specify the vertical line to start capturing image data from. Allows an image smaller than the native resolution of a camera to be captured.">
+            <constraint display="Value must be an integer">testInteger("${module.driver.pdc.y_start_pixel}")</constraint>
+        </property>
+        <property id="module.driver.pdc.p_callback" display="Callback" default="g_pdc_user_callback" description="A user callback function can be provided. If this callback function is provided, it is called from the interrupt service routine (ISR) each time a frame is captured and ready to be processed.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.pdc.p_callback}")</constraint>
+        </property>
+        <property default="" display="Frame End Interrupt Priority" id="module.driver.pdc.frame_end_ipl" description="Select the frame end interrupt priority.">
+            <select enum="enum.mcu.nvic.priorities.optional"/>
+        </property>
+        <property default="" display="PDC Interrupt Priority" id="module.driver.pdc.irq_ipl" description="Select the PDC interrupt priority.">
+            <select enum="enum.mcu.nvic.priorities.optional"/>
+        </property>
+        <header>
+            /** PDC on PDC instance */
+            extern const pdc_instance_t ${module.driver.pdc.name};
+            #ifndef ${module.driver.pdc.p_callback}
+            void ${module.driver.pdc.p_callback}(pdc_callback_args_t * p_args);
+            #endif
+            #ifdef ${module.driver.pdc.data_buffer}
+            #define PDC_ON_PDC_BUFFER_USED_${module.driver.pdc.name} (0)
+            #else
+            #define PDC_ON_PDC_BUFFER_USED_${module.driver.pdc.name} (1)
+            #endif
+            #if PDC_ON_PDC_BUFFER_USED_${module.driver.pdc.name}
+            /** Buffer where captured image will be stored for application usage */
+            extern uint8_t ${module.driver.pdc.data_buffer}[${module.driver.pdc.number_of_buffers}][${module.driver.pdc.x_pixels} * ${module.driver.pdc.y_pixels} * ${module.driver.pdc.bytes_per_pixel}];
+            #endif
+        </header>
+        <includes>
+            #include &quot;r_pdc.h&quot;
+        </includes>
+    <declarations>
+#if ${module.driver.pdc.irq_ipl} != BSP_IRQ_DISABLED
+#if !defined(SSP_SUPPRESS_ISR_${module.driver.pdc.name}) &amp;&amp; !defined(SSP_SUPPRESS_ISR_PDC)
+SSP_VECTOR_DEFINE(pdc_int_isr, PDC, INT);
+#endif
+#endif
+#if ${module.driver.pdc.frame_end_ipl} != BSP_IRQ_DISABLED
+#if !defined(SSP_SUPPRESS_ISR_${module.driver.pdc.name}) &amp;&amp; !defined(SSP_SUPPRESS_ISR_PDC)
+SSP_VECTOR_DEFINE(pdc_frame_end_isr, PDC, FRAME_END);
+#endif
+#endif
+            #if PDC_ON_PDC_BUFFER_USED_${module.driver.pdc.name}
+            uint8_t ${module.driver.pdc.data_buffer}[${module.driver.pdc.number_of_buffers}][${module.driver.pdc.x_pixels} * ${module.driver.pdc.y_pixels} * ${module.driver.pdc.bytes_per_pixel}] BSP_ALIGN_VARIABLE_V2(64) BSP_PLACE_IN_SECTION_V2(&quot;.${module.driver.pdc.section}&quot;);
+            #endif
+            pdc_instance_ctrl_t ${module.driver.pdc.name}_ctrl;
+            pdc_cfg_t ${module.driver.pdc.name}_cfg =
+            {
+                .bytes_per_pixel        = ${module.driver.pdc.bytes_per_pixel},
+                .clock_division         = ${module.driver.pdc.clock_division},
+                .endian                 = ${module.driver.pdc.endian},
+                .hsync_polarity         = ${module.driver.pdc.hsync_polarity},
+                .vsync_polarity         = ${module.driver.pdc.vsync_polarity},
+                .p_buffer               = (uint8_t *)${module.driver.pdc.data_buffer},
+                .p_callback             = ${module.driver.pdc.p_callback},
+                .p_context              = NULL,
+                .p_extend               = NULL,
+                .p_lower_lvl_transfer   = &amp;${module.driver.pdc_on_pdc.requires.transfer::module.driver.transfer.name},
+                .x_capture_pixels       = ${module.driver.pdc.x_pixels},
+                .y_capture_pixels       = ${module.driver.pdc.y_pixels},
+                .x_capture_start_pixel  = ${module.driver.pdc.x_start_pixel},
+                .y_capture_start_pixel  = ${module.driver.pdc.y_start_pixel},
+                .frame_end_ipl          = ${module.driver.pdc.frame_end_ipl},
+                .irq_ipl                = ${module.driver.pdc.irq_ipl},
+            };
+
+            const pdc_instance_t ${module.driver.pdc.name} =
+            {
+                .p_ctrl = &amp;${module.driver.pdc.name}_ctrl,
+                .p_cfg =  &amp;${module.driver.pdc.name}_cfg,
+                .p_api =  &amp;g_pdc_on_pdc,
+            };
+    </declarations>
+    </module>
+</synergyModuleDescription>

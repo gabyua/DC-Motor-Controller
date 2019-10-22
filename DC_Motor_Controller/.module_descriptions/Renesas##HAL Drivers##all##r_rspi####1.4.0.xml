@@ -1,0 +1,415 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+	<config id="config.driver.rspi" path="ssp_cfg/driver/r_rspi_cfg.h" version="0">
+		<property default="config.driver.rspi.param_checking_enable.bsp" display="Parameter Checking" id="config.driver.rspi.param_checking_enable" description="If selected code for parameter checking is included in the build.">
+		    <option display="Default (BSP)" id="config.driver.rspi.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+			<option display="Enabled" id="config.driver.rspi.param_checking_enable.enabled" value="(1)"/>
+			<option display="Disabled" id="config.driver.rspi.param_checking_enable.disabled" value="(0)"/>
+		</property>
+		<content>#define RSPI_CFG_PARAM_CHECKING_ENABLE ${config.driver.rspi.param_checking_enable}
+</content>
+	</config>
+	<module config="config.driver.rspi" display="Driver|Connectivity|${module.driver.spi.name} SPI Driver on r_rspi" id="module.driver.spi_on_rspi" version="1" url="http://knowledgebase.renesas.com/English_Content/Renesas_Synergy%E2%84%A2_Platform/Renesas_Synergy_Knowledge_Base/r_rspi_Module_Guide_Resources">
+        <constraint display="Unique name required for each instance">
+            "${interface.driver.spi.${module.driver.spi.name}}" === "1"
+        </constraint>
+        <constraint display="Requires same priority for RXI and TXI interrupts">
+            "${module.driver.spi.rxi_ipl}" == "${module.driver.spi.txi_ipl}"
+        </constraint>
+        <constraint display="Requires DTC for both or neither">
+            (("${interface.driver.transfer_on_dtc.${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.name}}" === "1") &amp;&amp; ("${interface.driver.transfer_on_dtc.${module.driver.spi_on_rspi.requires.transfer_rx::module.driver.transfer.name}}" === "1")) || (("${interface.driver.transfer_on_dtc.${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.name}}" != "1") &amp;&amp; ("${interface.driver.transfer_on_dtc.${module.driver.spi_on_rspi.requires.transfer_rx::module.driver.transfer.name}}" != "1"))
+        </constraint>
+        <constraint display="Transfer sizes must be the same">
+            (!(("${interface.driver.transfer_on_dtc.${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.name}}" === "1") &amp;&amp; ("${interface.driver.transfer_on_dtc.${module.driver.spi_on_rspi.requires.transfer_rx::module.driver.transfer.name}}" === "1"))) ||
+            ("${interface.driver.transfer_on_dtc.${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.size}}" === "${interface.driver.transfer_on_dtc.${module.driver.spi_on_rspi.requires.transfer_rx::module.driver.transfer.size}}")
+        </constraint>
+        <constraint display="Requires SPI Peripheral">
+          "${interface.mcu.spi.external}" === "1"
+        </constraint>
+        <requires interface="interface.mcu.spi.external" visible="false" display="Requires SPI Peripheral" />
+        <requires id="module.driver.spi_on_rspi.requires.transfer_tx" interface="interface.driver.transfer_on_dtc" display="Add DTC Driver for Transmission [Recommended but optional]">
+			<override property="module.driver.transfer.mode" value="module.driver.transfer.mode.mode_normal"/>
+			<override property="module.driver.transfer.dest_addr_mode" value="module.driver.transfer.dest_addr_mode.addr_mode_fixed"/>
+			<override property="module.driver.transfer.src_addr_mode" value="module.driver.transfer.src_addr_mode.addr_mode_incremented"/>
+			<override property="module.driver.transfer.repeat_area" value="module.driver.transfer.repeat_area.repeat_area_source"/>
+			<override property="module.driver.transfer.p_dest" value="NULL"/>
+			<override property="module.driver.transfer.p_src" value="NULL"/>
+			<override property="module.driver.transfer.length" value="0"/>
+			<override property="module.driver.transfer.interrupt" value="module.driver.transfer.interrupt.interrupt_end"/>
+			<override property="module.driver.transfer.num_blocks" value="0"/>
+			<override property="module.driver.transfer.auto_enable" value="module.driver.transfer.auto_enable.false"/>
+			<override property="module.driver.transfer.p_callback" value="NULL"/>
+			<override property="module.driver.transfer.activation_source" value="module.driver.transfer.event.event_spi${module.driver.spi.channel}_txi"/>
+		</requires>
+        <requires id="module.driver.spi_on_rspi.requires.transfer_rx" interface="interface.driver.transfer_on_dtc" display="Add DTC Driver for Reception [Recommended but optional]">
+			<override property="module.driver.transfer.mode" value="module.driver.transfer.mode.mode_normal"/>
+			<override property="module.driver.transfer.dest_addr_mode" value="module.driver.transfer.dest_addr_mode.addr_mode_incremented"/>
+			<override property="module.driver.transfer.src_addr_mode" value="module.driver.transfer.src_addr_mode.addr_mode_fixed"/>
+			<override property="module.driver.transfer.repeat_area" value="module.driver.transfer.repeat_area.repeat_area_destination"/>
+			<override property="module.driver.transfer.p_dest" value="NULL"/>
+			<override property="module.driver.transfer.p_src" value="NULL"/>
+			<override property="module.driver.transfer.length" value="0"/>
+			<override property="module.driver.transfer.interrupt" value="module.driver.transfer.interrupt.interrupt_end"/>
+			<override property="module.driver.transfer.num_blocks" value="0"/>
+			<override property="module.driver.transfer.auto_enable" value="module.driver.transfer.auto_enable.false"/>
+			<override property="module.driver.transfer.p_callback" value="NULL"/>
+			<override property="module.driver.transfer.activation_source" value="module.driver.transfer.event.event_spi${module.driver.spi.channel}_rxi"/>
+		</requires>
+        <provides interface="interface.driver.spi" />
+        <provides interface="interface.driver.spi_on_spi" />
+        <provides interface="interface.driver.spi.${module.driver.spi.name}" />
+        <property default="rspi" id="module.driver.spi.spi_interface" description=""/>
+        <property default="g_spi${_instance}" display="Name" id="module.driver.spi.name" description="Module name.">
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.driver.spi.name}")</constraint>
+        </property>
+	    <property default="0" display="Channel" id="module.driver.spi.channel" description="Select the SPI channel.">
+			<constraint display="Value must be an integer between 0 and 9">testInteger("${module.driver.spi.channel}")  &amp;&amp; ("${module.driver.spi.channel}" &gt;= 0) &amp;&amp; ("${module.driver.spi.channel}" &lt;= 9)</constraint>
+           </property>
+		<property default="module.driver.spi.operating_mode.mode_master" display="Operating Mode" id="module.driver.spi.operating_mode" description="Select the SPI operating mode.">
+			<option display="Master" id="module.driver.spi.operating_mode.mode_master" value="SPI_MODE_MASTER"/>
+			<option display="Slave" id="module.driver.spi.operating_mode.mode_slave" value="SPI_MODE_SLAVE"/>
+		</property>
+		<property default="module.driver.spi.clk_phase.clk_phase_edge_odd" display="Clock Phase" id="module.driver.spi.clk_phase" description="Select the clock edge to sample data.">
+			<option display="Data sampling on odd edge, data variation on even edge" id="module.driver.spi.clk_phase.clk_phase_edge_odd" value="SPI_CLK_PHASE_EDGE_ODD"/>
+			<option display="Data sampling on even edge, data variation on odd edge" id="module.driver.spi.clk_phase.clk_phase_edge_even" value="SPI_CLK_PHASE_EDGE_EVEN"/>
+		</property>
+		<property default="module.driver.spi.clk_polarity.clk_polarity_low" display="Clock Polarity" id="module.driver.spi.clk_polarity" description="Select clock level when idle.">
+			<option display="Low when idle" id="module.driver.spi.clk_polarity.clk_polarity_low" value="SPI_CLK_POLARITY_LOW"/>
+			<option display="High when idle" id="module.driver.spi.clk_polarity.clk_polarity_high" value="SPI_CLK_POLARITY_HIGH"/>
+		</property>
+		<property default="module.driver.spi.mode_fault.mode_fault_error_disable" display="Mode Fault Error" id="module.driver.spi.mode_fault" description="Detect master/slave mode conflicts.">
+			<option display="Enable" id="module.driver.spi.mode_fault.mode_fault_error_enable" value="SPI_MODE_FAULT_ERROR_ENABLE"/>
+			<option display="Disable" id="module.driver.spi.mode_fault.mode_fault_error_disable" value="SPI_MODE_FAULT_ERROR_DISABLE"/>
+		</property>
+		<property default="module.driver.spi.bit_order.bit_order_msb_first" display="Bit Order" id="module.driver.spi.bit_order" description="Select the data bit order.">
+			<option display="MSB First" id="module.driver.spi.bit_order.bit_order_msb_first" value="SPI_BIT_ORDER_MSB_FIRST"/>
+			<option display="LSB First" id="module.driver.spi.bit_order.bit_order_lsb_first" value="SPI_BIT_ORDER_LSB_FIRST"/>
+		</property>
+		<property default="500000" display="Bitrate" id="module.driver.spi.bitrate" description="Select the transmission rate in bits per second.">
+			<constraint display="Value must be a positive integer less than or equal to 30 MHz or PCLK/2, whichever is lower">testInteger("${module.driver.spi.bitrate}")  &amp;&amp; ("${module.driver.spi.bitrate}" &gt; 0)  &amp;&amp; ("${module.driver.spi.bitrate}" &lt; 30000001)</constraint>
+        </property>
+        <property default="NULL" display="Callback" id="module.driver.spi.p_callback" description="A user callback function can be provided. If this callback function is provided, it will be called from the interrupt service routine (ISR).">
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.driver.spi.p_callback}")</constraint>
+        </property>
+
+        <!-- SPI Extended configuration -->
+		<property default="module.driver.spi.rspi_clksyn.spi_operation" display="SPI Mode" id="module.driver.spi.rspi_clksyn" description="Select the clock sync mode.">
+			<option display="SPI Operation" id="module.driver.spi.rspi_clksyn.spi_operation" value="RSPI_OPERATION_SPI"/>
+			<option display="Clock Synchronous operation" id="module.driver.spi.rspi_clksyn.bit_order_lsb_first" value="RSPI_OPERATION_CLK_SYN"/>
+		</property>
+		<property default="module.driver.spi.sslp0.low" display="Slave Select Polarity(SSL0)" id="module.driver.spi.sslp0" description="Select the slave select active level.">
+			<option display="Active Low" id="module.driver.spi.sslp0.low" value="RSPI_SSLP_LOW"/>
+			<option display="Active High" id="module.driver.spi.sslp0.high" value="RSPI_SSLP_HIGH"/>
+		</property>
+		<property default="module.driver.spi.sslp1.low" display="Slave Select Polarity(SSL1)" id="module.driver.spi.sslp1" description="Select the slave select active level.">
+			<option display="Active Low" id="module.driver.spi.sslp1.low" value="RSPI_SSLP_LOW"/>
+			<option display="Active High" id="module.driver.spi.sslp1.high" value="RSPI_SSLP_HIGH"/>
+		</property>
+		<property default="module.driver.spi.sslp2.low" display="Slave Select Polarity(SSL2)" id="module.driver.spi.sslp2" description="Select the slave select active level.">
+			<option display="Active Low" id="module.driver.spi.sslp2.low" value="RSPI_SSLP_LOW"/>
+			<option display="Active High" id="module.driver.spi.sslp2.high" value="RSPI_SSLP_HIGH"/>
+		</property>
+		<property default="module.driver.spi.sslp3.low" display="Slave Select Polarity(SSL3)" id="module.driver.spi.sslp3" description="Select the slave select active level.">
+			<option display="Active Low" id="module.driver.spi.sslp3.low" value="RSPI_SSLP_LOW"/>
+			<option display="Active High" id="module.driver.spi.sslp3.high" value="RSPI_SSLP_HIGH"/>
+		</property>
+		<property default="module.driver.spi.looback1.normal" display="Select Loopback1" id="module.driver.spi.looback1" description="Select the data mode for loopback 1.">
+			<option display="Normal" id="module.driver.spi.looback1.normal" value="RSPI_LOOPBACK1_NORMAL_DATA"/>
+			<option display="Inverted" id="module.driver.spi.looback1.inverted" value="RSPI_LOOPBACK1_INVERTED_DATA"/>
+		</property>
+		<property default="module.driver.spi.looback2.normal" display="Select Loopback2" id="module.driver.spi.looback2" description="Select the data mode for loopback 2.">
+			<option display="Normal" id="module.driver.spi.looback2.normal" value="RSPI_LOOPBACK2_NORMAL_DATA"/>
+			<option display="Not Inverted" id="module.driver.spi.looback2.notinverted" value="RSPI_LOOPBACK2_NOT_INVERTED_DATA"/>
+		</property>
+		<property default="module.driver.spi.mosi_idle_enable.disable" display="Enable MOSI Idle" id="module.driver.spi.mosi_idle_enable" description="Enable the MOSI idle mode.">
+			<option display="Enable" id="module.driver.spi.mosi_idle_enable.enable" value="RSPI_MOSI_IDLE_VAL_FIXING_ENABLE"/>
+			<option display="Disable" id="module.driver.spi.mosi_idle_enable.disable" value="RSPI_MOSI_IDLE_VAL_FIXING_DISABLE"/>
+		</property>
+		<property default="module.driver.spi.mosi_idle_value.low" display="MOSI Idle State" id="module.driver.spi.mosi_idle_value" description="Select the MOSI idle level if MOSI idle is enabled.">
+			<option display="MOSI Low" id="module.driver.spi.mosi_idle_value.low" value="RSPI_MOSI_IDLE_FIXED_VAL_LOW"/>
+			<option display="MOSI High" id="module.driver.spi.mosi_idle_value.high" value="RSPI_MOSI_IDLE_FIXED_VAL_HIGH"/>
+		</property>
+
+		<property default="module.driver.spi.parity_enable.disable" display="Enable Parity" id="module.driver.spi.parity_enable" description="Enable parity.">
+			<option display="Enable" id="module.driver.spi.parity_enable.enable" value="RSPI_PARITY_STATE_ENABLE"/>
+			<option display="Disable" id="module.driver.spi.parity_enable.disable" value="RSPI_PARITY_STATE_DISABLE"/>
+		</property>
+		<property default="module.driver.spi.parity_mode.odd" display="Parity Mode" id="module.driver.spi.parity_mode" description="Select the parity mode if parity is enabled.">
+			<option display="Parity Odd" id="module.driver.spi.parity_mode.odd" value="RSPI_PARITY_MODE_ODD"/>
+			<option display="Parity Even" id="module.driver.spi.parity_mode.even" value="RSPI_PARITY_MODE_EVEN"/>
+		</property>
+		<property default="module.driver.spi.ssl_select.zero" display="Select SSL(Slave Select)" id="module.driver.spi.ssl_select" description="Select which slave to use.">
+			<option display="SSL0" id="module.driver.spi.ssl_select.zero" value="RSPI_SSL_SELECT_SSL0"/>
+			<option display="SSL1" id="module.driver.spi.ssl_select.one" value="RSPI_SSL_SELECT_SSL1"/>
+			<option display="SSL2" id="module.driver.spi.ssl_select.two" value="RSPI_SSL_SELECT_SSL2"/>
+			<option display="SSL3" id="module.driver.spi.ssl_select.three" value="RSPI_SSL_SELECT_SSL3"/>
+		</property>
+		<property default="module.driver.spi.ssl_level_keep.not_keep" display="Select SSL Level After Transfer" id="module.driver.spi.ssl_level_keep" description="Select the slave select level after transfer is complete.">
+			<option display="SSL Level Keep" id="module.driver.spi.ssl_level_keep.keep" value="RSPI_SSL_LEVEL_KEEP"/>
+			<option display="SSL Level Do Not Keep" id="module.driver.spi.ssl_level_keep.not_keep" value="RSPI_SSL_LEVEL_KEEP_NOT"/>
+		</property>
+		<property default="module.driver.spi.clock_delay_enable.disable" display="Clock Delay Enable" id="module.driver.spi.clock_delay_enable" description="Enable the clock delay.">
+			<option display="Clock Delay Enable" id="module.driver.spi.clock_delay_enable.enable" value="RSPI_CLOCK_DELAY_STATE_ENABLE"/>
+			<option display="Clock Delay Disable" id="module.driver.spi.clock_delay_enable.disable" value="RSPI_CLOCK_DELAY_STATE_DISABLE"/>
+		</property>
+		<property default="module.driver.spi.clock_delay_val.one" display="Clock Delay Count" id="module.driver.spi.clock_delay_val" description="Select the clock delay time if clock delay is enabled.">
+			<option display="Clock Delay 1 RSPCK" id="module.driver.spi.clock_delay_val.one" value="RSPI_CLOCK_DELAY_COUNT_1"/>
+			<option display="Clock Delay 2 RSPCK" id="module.driver.spi.clock_delay_val.two" value="RSPI_CLOCK_DELAY_COUNT_2"/>
+			<option display="Clock Delay 3 RSPCK" id="module.driver.spi.clock_delay_val.three" value="RSPI_CLOCK_DELAY_COUNT_3"/>
+			<option display="Clock Delay 4 RSPCK" id="module.driver.spi.clock_delay_val.four" value="RSPI_CLOCK_DELAY_COUNT_4"/>
+			<option display="Clock Delay 5 RSPCK" id="module.driver.spi.clock_delay_val.five" value="RSPI_CLOCK_DELAY_COUNT_5"/>
+			<option display="Clock Delay 6 RSPCK" id="module.driver.spi.clock_delay_val.six" value="RSPI_CLOCK_DELAY_COUNT_6"/>
+			<option display="Clock Delay 7 RSPCK" id="module.driver.spi.clock_delay_val.seven" value="RSPI_CLOCK_DELAY_COUNT_7"/>
+			<option display="Clock Delay 8 RSPCK" id="module.driver.spi.clock_delay_val.eight" value="RSPI_CLOCK_DELAY_COUNT_8"/>
+		</property>
+		<property default="module.driver.spi.rspi_ssl_neg_delay_state.disable" display="SSL Negation Delay Enable" id="module.driver.spi.rspi_ssl_neg_delay_state" description="Enable the slave select negation delay.">
+			<option display="Negation Delay Enable" id="module.driver.spi.rspi_ssl_neg_delay_state.enable" value="RSPI_SSL_NEGATION_DELAY_ENABLE"/>
+			<option display="Negation Delay Disable" id="module.driver.spi.rspi_ssl_neg_delay_state.disable" value="RSPI_SSL_NEGATION_DELAY_DISABLE"/>
+		</property>
+		<property default="module.driver.spi.rspi_ssl_neg_delay_count.one" display="Negation Delay Count" id="module.driver.spi.rspi_ssl_neg_delay_count" description="Select the slave select negation delay.">
+			<option display="Negation Delay 1 RSPCK" id="module.driver.spi.rspi_ssl_neg_delay_count.one" value="RSPI_SSL_NEGATION_DELAY_1"/>
+			<option display="Negation Delay 2 RSPCK" id="module.driver.spi.rspi_ssl_neg_delay_count.two" value="RSPI_SSL_NEGATION_DELAY_2"/>
+			<option display="Negation Delay 3 RSPCK" id="module.driver.spi.rspi_ssl_neg_delay_count.three" value="RSPI_SSL_NEGATION_DELAY_3"/>
+			<option display="Negation Delay 4 RSPCK" id="module.driver.spi.rspi_ssl_neg_delay_count.four" value="RSPI_SSL_NEGATION_DELAY_4"/>
+			<option display="Negation Delay 5 RSPCK" id="module.driver.spi.rspi_ssl_neg_delay_count.five" value="RSPI_SSL_NEGATION_DELAY_5"/>
+			<option display="Negation Delay 6 RSPCK" id="module.driver.spi.rspi_ssl_neg_delay_count.six" value="RSPI_SSL_NEGATION_DELAY_6"/>
+			<option display="Negation Delay 7 RSPCK" id="module.driver.spi.rspi_ssl_neg_delay_count.seven" value="RSPI_SSL_NEGATION_DELAY_7"/>
+			<option display="Negation Delay 8 RSPCK" id="module.driver.spi.rspi_ssl_neg_delay_count.eight" value="RSPI_SSL_NEGATION_DELAY_8"/>
+		</property>
+		<property default="module.driver.spi.rspi_next_access_delay_state.disable" display="Next Access Delay Enable" id="module.driver.spi.rspi_next_access_delay_state" description="Select the next access delay.">
+			<option display="Next Access Delay Enable" id="module.driver.spi.rspi_next_access_delay_state.enable" value="RSPI_NEXT_ACCESS_DELAY_STATE_ENABLE"/>
+			<option display="Next Access Delay Disable" id="module.driver.spi.rspi_next_access_delay_state.disable" value="RSPI_NEXT_ACCESS_DELAY_STATE_DISABLE"/>
+		</property>
+		<property default="module.driver.spi.rspi_next_access_delay_count.one" display="Next Access Delay Count" id="module.driver.spi.rspi_next_access_delay_count" description="Select the next access delay count.">
+			<option display="Next Access Delay 1 RSPCK" id="module.driver.spi.rspi_next_access_delay_count.one" value="RSPI_NEXT_ACCESS_DELAY_COUNT_1"/>
+			<option display="Next Access Delay 2 RSPCK" id="module.driver.spi.rspi_next_access_delay_count.two" value="RSPI_NEXT_ACCESS_DELAY_COUNT_2"/>
+			<option display="Next Access Delay 3 RSPCK" id="module.driver.spi.rspi_next_access_delay_count.three" value="RSPI_NEXT_ACCESS_DELAY_COUNT_3"/>
+			<option display="Next Access Delay 4 RSPCK" id="module.driver.spi.rspi_next_access_delay_count.four" value="RSPI_NEXT_ACCESS_DELAY_COUNT_4"/>
+			<option display="Next Access Delay 5 RSPCK" id="module.driver.spi.rspi_next_access_delay_count.five" value="RSPI_NEXT_ACCESS_DELAY_COUNT_5"/>
+			<option display="Next Access Delay 6 RSPCK" id="module.driver.spi.rspi_next_access_delay_count.six" value="RSPI_NEXT_ACCESS_DELAY_COUNT_6"/>
+			<option display="Next Access Delay 7 RSPCK" id="module.driver.spi.rspi_next_access_delay_count.seven" value="RSPI_NEXT_ACCESS_DELAY_COUNT_7"/>
+			<option display="Next Access Delay 8 RSPCK" id="module.driver.spi.rspi_next_access_delay_count.eight" value="RSPI_NEXT_ACCESS_DELAY_COUNT_8"/>
+		</property>
+        <property default="" display="Receive Interrupt Priority" id="module.driver.spi.rxi_ipl" description="Select the receive interrupt priority.">
+            <select enum="enum.mcu.nvic.priorities.mandatory"/>
+        </property>
+        <property default="" display="Transmit Interrupt Priority" id="module.driver.spi.txi_ipl" description="Select the transmit interrupt priority.">
+            <select enum="enum.mcu.nvic.priorities.mandatory"/>
+        </property>
+        <property default="" display="Transmit End Interrupt Priority" id="module.driver.spi.tei_ipl" description="Select the transmit end interrupt priority.">
+            <select enum="enum.mcu.nvic.priorities.mandatory"/>
+        </property>
+        <property default="" display="Error Interrupt Priority" id="module.driver.spi.eri_ipl" description="Select the error interrupt priority.">
+            <select enum="enum.mcu.nvic.priorities.mandatory"/>
+        </property>
+        <header>
+        /** SPI config */
+	extern const spi_cfg_t ${module.driver.spi.name}_cfg;
+	/** RSPI extended config */
+	extern const spi_on_rspi_cfg_t ${module.driver.spi.name}_ext_cfg;
+        /** SPI on RSPI Instance. */
+        extern const spi_instance_t ${module.driver.spi.name};
+        /** SPI instance control */
+        extern rspi_instance_ctrl_t ${module.driver.spi.name}_ctrl;
+#ifndef ${module.driver.spi.p_callback}
+        void ${module.driver.spi.p_callback}(spi_callback_args_t * p_args);
+#endif
+
+extern const transfer_instance_t ${module.driver.spi.name}_transfer_rx;
+extern const transfer_instance_t ${module.driver.spi.name}_transfer_tx;
+
+#define SYNERGY_NOT_DEFINED (1)
+#define RSPI_TRANSFER_SIZE_1_BYTE (0x52535049)
+#if (RSPI_TRANSFER_SIZE_1_BYTE == RSPI_${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.size})
+
+#define ${module.driver.spi.name}_P_TRANSFER_TX (&amp;${module.driver.spi.name}_transfer_tx)
+#define ${module.driver.spi.name}_P_TRANSFER_RX (&amp;${module.driver.spi.name}_transfer_rx)
+
+#else
+#if (SYNERGY_NOT_DEFINED == ${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.name})
+    #define ${module.driver.spi.name}_P_TRANSFER_TX (NULL)
+#else
+    #define ${module.driver.spi.name}_P_TRANSFER_TX (&amp;${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.name})
+#endif
+#if (SYNERGY_NOT_DEFINED == ${module.driver.spi_on_rspi.requires.transfer_rx::module.driver.transfer.name})
+    #define ${module.driver.spi.name}_P_TRANSFER_RX (NULL)
+#else
+    #define ${module.driver.spi.name}_P_TRANSFER_RX (&amp;${module.driver.spi_on_rspi.requires.transfer_rx::module.driver.transfer.name})
+#endif
+#endif
+#undef RSPI_TRANSFER_SIZE_1_BYTE
+#undef SYNERGY_NOT_DEFINED
+#define ${module.driver.spi.name}_P_EXTEND (&amp;${module.driver.spi.name}_ext_cfg)
+        </header>
+		<includes>
+#include &quot;r_rspi.h&quot;
+#include &quot;r_spi_api.h&quot;</includes>
+		<declarations>
+#define RSPI_TRANSFER_SIZE_1_BYTE (0x52535049)
+#if (RSPI_TRANSFER_SIZE_1_BYTE == RSPI_${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.size})
+dtc_instance_ctrl_t ${module.driver.spi.name}_transfer_tx_ctrl;
+uint32_t ${module.driver.spi.name}_tx_inter = 0;
+transfer_info_t ${module.driver.spi.name}_transfer_tx_info[2] =
+{ {
+	.dest_addr_mode = TRANSFER_ADDR_MODE_FIXED, 
+	.repeat_area = TRANSFER_REPEAT_AREA_SOURCE, 
+	.irq = TRANSFER_IRQ_END,
+	.chain_mode = TRANSFER_CHAIN_MODE_EACH, 
+	.src_addr_mode = TRANSFER_ADDR_MODE_INCREMENTED, 
+	.size = TRANSFER_SIZE_1_BYTE,
+	.mode = TRANSFER_MODE_NORMAL, 
+	.p_dest = (void *) &amp;${module.driver.spi.name}_tx_inter, 
+	.p_src = (void const *) NULL, 
+	.num_blocks = 0, 
+	.length = 0,
+	}, 
+	{
+	.dest_addr_mode = TRANSFER_ADDR_MODE_FIXED, 
+	.repeat_area = TRANSFER_REPEAT_AREA_SOURCE, 
+	.irq = TRANSFER_IRQ_END,
+	.chain_mode = TRANSFER_CHAIN_MODE_DISABLED, 
+	.src_addr_mode = TRANSFER_ADDR_MODE_FIXED, 
+	.size = TRANSFER_SIZE_4_BYTE,
+	.mode = TRANSFER_MODE_NORMAL, 
+	.p_dest = (void *) NULL, 
+	.p_src = (void const *) &amp;${module.driver.spi.name}_tx_inter, 
+	.num_blocks = 0, 
+	.length = 0,
+	}, };
+	
+	const transfer_cfg_t ${module.driver.spi.name}_transfer_tx_cfg =
+{ 
+	.p_info = ${module.driver.spi.name}_transfer_tx_info, 
+	.activation_source = ${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.activation_source}, 
+	.auto_enable = false, 
+	.p_callback = NULL,
+	.p_context = &amp;${module.driver.spi.name}_transfer_tx, 
+	.irq_ipl = ${module.driver.spi_on_rspi.requires.transfer_tx::module.driver.transfer.irq_ipl}
+};
+/* Instance structure to use this module. */
+const transfer_instance_t ${module.driver.spi.name}_transfer_tx =
+{ 
+	.p_ctrl = &amp;${module.driver.spi.name}_transfer_tx_ctrl, 
+	.p_cfg = &amp;${module.driver.spi.name}_transfer_tx_cfg, 
+	.p_api = &amp;g_transfer_on_dtc 
+};
+
+
+dtc_instance_ctrl_t ${module.driver.spi.name}_transfer_rx_ctrl;
+uint32_t ${module.driver.spi.name}_rx_inter = 0;
+transfer_info_t ${module.driver.spi.name}_transfer_rx_info[2] =
+{ {
+	.dest_addr_mode = TRANSFER_ADDR_MODE_FIXED, 
+	.repeat_area = TRANSFER_REPEAT_AREA_SOURCE, 
+	.irq = TRANSFER_IRQ_END,
+	.chain_mode = TRANSFER_CHAIN_MODE_EACH, 
+	.src_addr_mode = TRANSFER_ADDR_MODE_FIXED, 
+	.size = TRANSFER_SIZE_4_BYTE,
+	.mode = TRANSFER_MODE_NORMAL, 
+	.p_dest = (void *) &amp;${module.driver.spi.name}_rx_inter, 
+	.p_src = (void const *) NULL, 
+	.num_blocks = 0, 
+	.length = 0,
+	}, 
+	{
+	.dest_addr_mode = TRANSFER_ADDR_MODE_INCREMENTED, 
+	.repeat_area = TRANSFER_REPEAT_AREA_SOURCE, 
+	.irq = TRANSFER_IRQ_END,
+	.chain_mode = TRANSFER_CHAIN_MODE_DISABLED, 
+	.src_addr_mode = TRANSFER_ADDR_MODE_FIXED, 
+	.size = TRANSFER_SIZE_1_BYTE,
+	.mode = TRANSFER_MODE_NORMAL, 
+	.p_dest = (void *) NULL, 
+	.p_src = (void const *) &amp;${module.driver.spi.name}_rx_inter, 
+	.num_blocks = 0, 
+	.length = 0,
+	}, };
+	
+	const transfer_cfg_t ${module.driver.spi.name}_transfer_rx_cfg =
+{ 
+	.p_info = ${module.driver.spi.name}_transfer_rx_info, 
+	.activation_source = ${module.driver.spi_on_rspi.requires.transfer_rx::module.driver.transfer.activation_source},
+	.auto_enable = false, 
+	.p_callback = NULL,
+	.p_context = &amp;${module.driver.spi.name}_transfer_rx, 
+	.irq_ipl = ${module.driver.spi_on_rspi.requires.transfer_rx::module.driver.transfer.irq_ipl}
+};
+/* Instance structure to use this module. */
+const transfer_instance_t ${module.driver.spi.name}_transfer_rx =
+{ 
+	.p_ctrl = &amp;${module.driver.spi.name}_transfer_rx_ctrl, 
+	.p_cfg = &amp;${module.driver.spi.name}_transfer_rx_cfg, 
+	.p_api = &amp;g_transfer_on_dtc 
+};
+#endif
+#undef RSPI_TRANSFER_SIZE_1_BYTE
+		
+#if !defined(SSP_SUPPRESS_ISR_${module.driver.spi.name}) &amp;&amp; !defined(SSP_SUPPRESS_ISR_SPI${module.driver.spi.channel})
+SSP_VECTOR_DEFINE_CHAN(spi_rxi_isr, SPI, RXI, ${module.driver.spi.channel});
+#endif
+#if !defined(SSP_SUPPRESS_ISR_${module.driver.spi.name}) &amp;&amp; !defined(SSP_SUPPRESS_ISR_SPI${module.driver.spi.channel})
+SSP_VECTOR_DEFINE_CHAN(spi_txi_isr, SPI, TXI, ${module.driver.spi.channel});
+#endif
+#if !defined(SSP_SUPPRESS_ISR_${module.driver.spi.name}) &amp;&amp; !defined(SSP_SUPPRESS_ISR_SPI${module.driver.spi.channel})
+SSP_VECTOR_DEFINE_CHAN(spi_eri_isr, SPI, ERI, ${module.driver.spi.channel});
+#endif
+#if !defined(SSP_SUPPRESS_ISR_${module.driver.spi.name}) &amp;&amp; !defined(SSP_SUPPRESS_ISR_SPI${module.driver.spi.channel})
+SSP_VECTOR_DEFINE_CHAN(spi_tei_isr, SPI, TEI, ${module.driver.spi.channel});
+#endif
+rspi_instance_ctrl_t ${module.driver.spi.name}_ctrl;
+
+/** RSPI extended configuration for RSPI HAL driver */
+const spi_on_rspi_cfg_t ${module.driver.spi.name}_ext_cfg =
+{
+    .rspi_clksyn                               = ${module.driver.spi.rspi_clksyn},
+    /* Communication mode is configured by the driver. write calls use TX_ONLY. read and writeRead use FULL_DUPLEX. */
+    .rspi_comm                                 = RSPI_COMMUNICATION_FULL_DUPLEX,
+    .ssl_polarity.rspi_ssl0                    = ${module.driver.spi.sslp0},
+    .ssl_polarity.rspi_ssl1                    = ${module.driver.spi.sslp1},
+    .ssl_polarity.rspi_ssl2                    = ${module.driver.spi.sslp2},
+    .ssl_polarity.rspi_ssl3                    = ${module.driver.spi.sslp3},
+    .loopback.rspi_loopback1                   = ${module.driver.spi.looback1},
+    .loopback.rspi_loopback2                   = ${module.driver.spi.looback2},
+    .mosi_idle.rspi_mosi_idle_fixed_val        = ${module.driver.spi.mosi_idle_value},
+    .mosi_idle.rspi_mosi_idle_val_fixing       = ${module.driver.spi.mosi_idle_enable},
+    .parity.rspi_parity                        = ${module.driver.spi.parity_enable},
+    .parity.rspi_parity_mode                   = ${module.driver.spi.parity_mode},
+    .ssl_select                                = ${module.driver.spi.ssl_select},
+    .ssl_level_keep                            = ${module.driver.spi.ssl_level_keep},
+    .clock_delay.rspi_clock_delay_count        = ${module.driver.spi.clock_delay_val},
+    .clock_delay.rspi_clock_delay_state        = ${module.driver.spi.clock_delay_enable},
+    .ssl_neg_delay.rspi_ssl_neg_delay_count    = ${module.driver.spi.rspi_ssl_neg_delay_count},
+    .ssl_neg_delay.rspi_ssl_neg_delay_state    = ${module.driver.spi.rspi_ssl_neg_delay_state},
+    .access_delay.rspi_next_access_delay_count = ${module.driver.spi.rspi_next_access_delay_count},
+    .access_delay.rspi_next_access_delay_state = ${module.driver.spi.rspi_next_access_delay_state},
+ };
+
+const spi_cfg_t ${module.driver.spi.name}_cfg =
+{
+    .channel             = ${module.driver.spi.channel},
+    .operating_mode      = ${module.driver.spi.operating_mode},
+    .clk_phase           = ${module.driver.spi.clk_phase},
+    .clk_polarity        = ${module.driver.spi.clk_polarity},
+    .mode_fault          = ${module.driver.spi.mode_fault},
+    .bit_order           = ${module.driver.spi.bit_order},
+    .bitrate             = ${module.driver.spi.bitrate},
+	.p_transfer_tx       = ${module.driver.spi.name}_P_TRANSFER_TX,
+	.p_transfer_rx       = ${module.driver.spi.name}_P_TRANSFER_RX,
+	.p_callback          = ${module.driver.spi.p_callback},
+	.p_context           = (void *)&amp;${module.driver.spi.name},
+	.p_extend            = (void *)&amp;${module.driver.spi.name}_ext_cfg,
+    .rxi_ipl             = ${module.driver.spi.rxi_ipl},
+    .txi_ipl             = ${module.driver.spi.txi_ipl},
+    .eri_ipl             = ${module.driver.spi.eri_ipl},
+    .tei_ipl             = ${module.driver.spi.tei_ipl},
+};
+/* Instance structure to use this module. */
+const spi_instance_t ${module.driver.spi.name} =
+{
+    .p_ctrl        = &amp;${module.driver.spi.name}_ctrl,
+    .p_cfg         = &amp;${module.driver.spi.name}_cfg,
+    .p_api         = &amp;g_spi_on_rspi
+};
+</declarations>
+	</module>
+</synergyModuleDescription>

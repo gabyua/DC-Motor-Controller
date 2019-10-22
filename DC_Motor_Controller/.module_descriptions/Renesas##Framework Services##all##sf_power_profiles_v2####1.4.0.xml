@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+<!-- SF Power Profiles XML START here-->
+    <config id="config.framework.sf_power_profiles_v2" path="ssp_cfg/framework/sf_power_profiles_v2_cfg.h" version="0">
+        <property default="config.framework.sf_power_profiles_v2.param_checking_enable.bsp" display="Parameter Checking" id="config.framework.sf_power_profiles_v2.param_checking_enable" description="Selects if code for parameter checking is to be included in the build.">
+            <option display="Default (BSP)" id="config.framework.sf_power_profiles_v2.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled" id="config.framework.sf_power_profiles_v2.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled" id="config.framework.sf_power_profiles_v2.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>
+           #define SF_POWER_PROFILES_V2_CFG_PARAM_CHECKING_ENABLE ${config.framework.sf_power_profiles_v2.param_checking_enable}
+        </content>
+    </config>
+    <module config="config.framework.sf_power_profiles_v2" display="Framework|Services|${module.framework.sf_power_profiles_v2_common.name} Power Profiles V2 Common" id="module.framework.sf_power_profiles_v2_common_on_sf_power_profiles_v2" common="1" version="1" url="http://knowledgebase.renesas.com/English_Content/Renesas_Synergy%E2%84%A2_Platform/Renesas_Synergy_Knowledge_Base/sf_power_profiles_v2_Module_Guide_Resources">
+        <constraint display="Requires LPM V2 Common Module">
+            testExists("${module.framework.sf_power_profiles_v2_common.requires.lpmv2_common::module.driver.lpmv2_common.name}")
+        </constraint>
+        <requires id="module.framework.sf_power_profiles_v2_common.requires.lpmv2_common" interface="interface.driver.lpmv2_common" display="Add LPM V2 Common Module" />
+        <provides interface="interface.framework.sf_power_profiles_v2_common" />
+        <provides interface="interface.framework.sf_power_profiles_v2_common_on_sf_power_profiles_v2" />
+        <provides interface="interface.framework.sf_power_profiles_v2_common.${module.framework.sf_power_profiles_v2_common.name}" />
+        <provides interface="interface.framework.sf_power_profiles_v2_common_on_sf_power_profiles_v2.${module.framework.sf_power_profiles_v2_common.name}" />
+        <property default="g_sf_power_profiles_v2_common" display="Name" id="module.framework.sf_power_profiles_v2_common.name" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_power_profiles_v2_common.name}")</constraint>
+        </property>
+        <header>
+            /** Power Profiles on Power Profiles instance */
+            extern sf_power_profiles_v2_instance_t ${module.framework.sf_power_profiles_v2_common.name};
+        </header>
+        <includes>#include &quot;sf_power_profiles_v2.h&quot;</includes>
+        <declarations>
+            /************************************************************/
+            /** Begin PPM V2 Common Configurations **********************/
+            /************************************************************/
+            sf_power_profiles_v2_ctrl_t ${module.framework.sf_power_profiles_v2_common.name}_ctrl;
+            sf_power_profiles_v2_cfg_t ${module.framework.sf_power_profiles_v2_common.name}_cfg =
+            {
+                .p_extend = NULL,
+            };
+            sf_power_profiles_v2_instance_t ${module.framework.sf_power_profiles_v2_common.name} =
+            {
+                .p_ctrl = &amp;${module.framework.sf_power_profiles_v2_common.name}_ctrl,
+                .p_cfg =  &amp;${module.framework.sf_power_profiles_v2_common.name}_cfg,
+                .p_api =  &amp;g_sf_power_profiles_v2_on_sf_power_profiles_v2,
+            };
+            /************************************************************/
+            /** End PPM V2 Common Configurations ************************/
+            /************************************************************/
+        </declarations>
+        <init>
+            /** Initialize PPM V2 Common */
+            ssp_err_t ssp_err_${module.framework.sf_power_profiles_v2_common.name};
+            ssp_err_${module.framework.sf_power_profiles_v2_common.name} = ${module.framework.sf_power_profiles_v2_common.name}.p_api->open(${module.framework.sf_power_profiles_v2_common.name}.p_ctrl, ${module.framework.sf_power_profiles_v2_common.name}.p_cfg);
+            if (SSP_SUCCESS != ssp_err_${module.framework.sf_power_profiles_v2_common.name})
+            {
+                while (1);
+            }
+        </init>
+    </module>
+    <module display="Framework|Services|${module.framework.sf_power_profiles_v2_run.name} Power Profiles V2 Run Profile" id="module.framework.sf_power_profiles_v2_run_on_sf_power_profiles_v2" version="1" url="http://knowledgebase.renesas.com/English_Content/Renesas_Synergy%E2%84%A2_Platform/Renesas_Synergy_Knowledge_Base/sf_power_profiles_v2_Module_Guide_Resources">
+        <constraint display="Module instances must have unique names">
+            "${interface.framework.sf_power_profiles_v2_run.${module.framework.sf_power_profiles_v2_run.name}}" === "1"
+        </constraint>
+        <constraint display="Requires Power Profiles V2 Common">
+            testExists("${module.framework.sf_power_profiles_v2_run.requires.sf_power_profiles_v2_common::module.framework.sf_power_profiles_v2_common.name}")
+        </constraint>
+        <constraint display="Requires CGC Clocks Config Driver">
+            testExists("${module.framework.sf_power_profiles_v2_run.requires.cgc_cfg::module.driver.cgc_cfg.name}")
+        </constraint>
+        <requires id="module.framework.sf_power_profiles_v2_run.requires.sf_power_profiles_v2_common" interface="interface.framework.sf_power_profiles_v2_common" display="Add Power Profiles V2 Common" />
+        <requires id="module.framework.sf_power_profiles_v2_run.requires.cgc_cfg" interface="interface.driver.cgc_cfg" display="Add CGC Clocks Config Driver" />
+
+        <provides interface="interface.framework.sf_power_profiles_v2_run" />
+        <provides interface="interface.framework.sf_power_profiles_v2_on_sf_power_profiles_v2" />
+	    <provides interface="interface.framework.sf_power_profiles_v2_run.${module.framework.sf_power_profiles_v2_run.name}" />
+        <provides interface="interface.framework.sf_power_profiles_v2_on_sf_power_profiles_v2.${module.framework.sf_power_profiles_v2_run.name}" />
+
+        <property id="module.framework.sf_power_profiles_v2_run.name" display="Name" default="g_sf_power_profiles_v2_run_${_instance}" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_power_profiles_v2_run.name}")</constraint>
+        </property>
+
+        <property id="module.framework.sf_power_profiles_v2_run.run_pin_cfg_table" display="Pin configuration table" default="NULL" description="Specify the name of a pin configuration table.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_power_profiles_v2_run.run_pin_cfg_table}")</constraint>
+        </property>
+        <header>
+            #ifdef ${module.framework.sf_power_profiles_v2_run.run_pin_cfg_table}
+                #define POWER_PROFILES_V2_RUN_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_run.name} (0)
+			#else
+                #define POWER_PROFILES_V2_RUN_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_run.name} (1)
+			#endif
+	        #if POWER_PROFILES_V2_RUN_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_run.name}
+                extern const ioport_cfg_t ${module.framework.sf_power_profiles_v2_run.run_pin_cfg_table};
+            #endif
+            extern const cgc_clocks_cfg_t ${module.framework.sf_power_profiles_v2_run.requires.cgc_cfg::module.driver.cgc_cfg.name};
+            /** Power Profiles run structure */
+            extern sf_power_profiles_v2_run_cfg_t ${module.framework.sf_power_profiles_v2_run.name};
+        </header>
+        <includes>
+            #include &quot;sf_power_profiles_v2.h&quot;
+        </includes>
+        <declarations>
+            /************************************************************/
+            /** Begin PPM V2 Run Configurations *************************/
+            /************************************************************/
+            sf_power_profiles_v2_run_cfg_t ${module.framework.sf_power_profiles_v2_run.name} =
+            {
+                #if POWER_PROFILES_V2_RUN_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_run.name}
+                    .p_ioport_pin_tbl       = &amp;${module.framework.sf_power_profiles_v2_run.run_pin_cfg_table},
+                #else
+                    .p_ioport_pin_tbl       = NULL,
+                #endif
+                .p_clock_cfg                = &amp;${module.framework.sf_power_profiles_v2_run.requires.cgc_cfg::module.driver.cgc_cfg.name},
+                .p_extend                   = NULL,
+            };
+            /************************************************************/
+            /** End PPM V2 Run Configurations ***************************/
+            /************************************************************/
+        </declarations>
+    </module>
+    <module display="Framework|Services|${module.framework.sf_power_profiles_v2_low_power.name} Power Profiles V2 Low Power Profile" id="module.framework.sf_power_profiles_v2_low_power_on_sf_power_profiles_v2" version="1" url="http://knowledgebase.renesas.com/English_Content/Renesas_Synergy%E2%84%A2_Platform/Renesas_Synergy_Knowledge_Base/sf_power_profiles_v2_Module_Guide_Resources">
+        <constraint display="Module instances must have unique names">
+            "${interface.framework.sf_power_profiles_v2_low_power.${module.framework.sf_power_profiles_v2_low_power.name}}" === "1"
+        </constraint>
+        <constraint display="Low power exit pin configuration table is not valid when using Deep Software Standby mode">
+            ("${module.framework.sf_power_profiles_v2_low_power.pin_table_exit}" === "NULL") ||
+            (!testExists("${interface.driver.lpmv2_on_lpmv2_s7g2_deep_standby.${module.framework.sf_power_profiles_v2_low_power.requires.lpmv2::module.driver.lpmv2.name}}"))
+        </constraint>
+        <constraint display="Requires LPM V2 Driver">
+            testExists("${module.framework.sf_power_profiles_v2_low_power.requires.lpmv2::module.driver.lpmv2.name}")
+        </constraint>
+        <constraint display="Requires Power Profiles V2 Common">
+            testExists("${module.framework.sf_power_profiles_v2_low_power.requires.sf_power_profiles_v2_common::module.framework.sf_power_profiles_v2_common.name}")
+        </constraint>
+        <requires id="module.framework.sf_power_profiles_v2_low_power.requires.lpmv2" interface="interface.driver.lpmv2" display="Add LPM V2 Driver" />
+        <requires id="module.framework.sf_power_profiles_v2_low_power.requires.sf_power_profiles_v2_common" interface="interface.framework.sf_power_profiles_v2_common" display="Add Power Profiles V2 Common" />
+        <provides interface="interface.framework.sf_power_profiles_v2_low_power" />        
+        <provides interface="interface.framework.sf_power_profiles_v2_low_power.${module.framework.sf_power_profiles_v2_low_power.name}" />
+        <provides interface="interface.framework.sf_power_profiles_v2_low_power_on_sf_power_profiles_v2" />
+        <provides interface="interface.framework.sf_power_profiles_v2_low_power_on_sf_power_profiles_v2.${module.framework.sf_power_profiles_v2_low_power.name}" />
+        <property id="module.framework.sf_power_profiles_v2_low_power.name" display="Name" default="g_sf_power_profiles_v2_low_power_${_instance}" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_power_profiles_v2_low_power.name}")</constraint>
+        </property>
+        <property id="module.framework.sf_power_profiles_v2_low_power.p_callback" display="Callback (Low Power Exit Event N/A when using Deep Software Standby)" default="NULL" description="A user callback function can be provided. If this callback function is provided, it will be called on resume from Deep Standby.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_power_profiles_v2_low_power.p_callback}")</constraint>
+        </property>
+        <property id="module.framework.sf_power_profiles_v2_low_power.pin_table_enter" display="Low power entry pin configuration table" default="NULL" description="Specify the name of a pin configuration table.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_power_profiles_v2_low_power.pin_table_enter}")</constraint>
+        </property>
+        <property id="module.framework.sf_power_profiles_v2_low_power.pin_table_exit" display="Low power exit pin configuration table" default="NULL" description="Specify the name of a pin configuration table.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_power_profiles_v2_low_power.pin_table_exit}")</constraint>
+        </property>
+        <header>
+            #ifdef ${module.framework.sf_power_profiles_v2_low_power.pin_table_enter}
+                #define POWER_PROFILES_V2_ENTER_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_low_power.name} (0)
+			#else
+                #define POWER_PROFILES_V2_ENTER_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_low_power.name} (1)
+			#endif
+	        #if POWER_PROFILES_V2_ENTER_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_low_power.name}
+                extern const ioport_cfg_t ${module.framework.sf_power_profiles_v2_low_power.pin_table_enter};
+            #endif
+			#ifdef ${module.framework.sf_power_profiles_v2_low_power.pin_table_exit}
+                #define POWER_PROFILES_V2_EXIT_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_low_power.name} (0)
+			#else
+                #define POWER_PROFILES_V2_EXIT_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_low_power.name} (1)
+			#endif
+	        #if POWER_PROFILES_V2_EXIT_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_low_power.name}
+                extern const ioport_cfg_t ${module.framework.sf_power_profiles_v2_low_power.pin_table_exit};
+            #endif
+            #ifdef ${module.framework.sf_power_profiles_v2_low_power.p_callback}
+                #define POWER_PROFILES_V2_CALLBACK_USED_${module.framework.sf_power_profiles_v2_low_power.name} (0)
+            #else
+                #define POWER_PROFILES_V2_CALLBACK_USED_${module.framework.sf_power_profiles_v2_low_power.name} (1)
+            #endif
+            #if POWER_PROFILES_V2_CALLBACK_USED_${module.framework.sf_power_profiles_v2_low_power.name}
+                void ${module.framework.sf_power_profiles_v2_low_power.p_callback}(sf_power_profiles_v2_callback_args_t * p_args);
+            #endif
+            /** Power Profiles run structure */
+            extern sf_power_profiles_v2_low_power_cfg_t ${module.framework.sf_power_profiles_v2_low_power.name};
+        </header>
+        <includes>
+            #include &quot;sf_power_profiles_v2.h&quot;
+        </includes>
+        <declarations>
+            /************************************************************/
+            /** Begin PPM V2 Low Power Profile **************************/
+            /************************************************************/
+            #if POWER_PROFILES_V2_CALLBACK_USED_${module.framework.sf_power_profiles_v2_low_power.name}
+                void ${module.framework.sf_power_profiles_v2_low_power.p_callback}(sf_power_profiles_v2_callback_args_t * p_args);
+            #endif
+            sf_power_profiles_v2_low_power_cfg_t ${module.framework.sf_power_profiles_v2_low_power.name} =
+            {
+                #if POWER_PROFILES_V2_EXIT_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_low_power.name}
+                    .p_ioport_pin_tbl_exit      = &amp;${module.framework.sf_power_profiles_v2_low_power.pin_table_exit},
+                #else
+                    .p_ioport_pin_tbl_exit      = NULL,
+                #endif
+                #if POWER_PROFILES_V2_ENTER_PIN_CFG_TBL_USED_${module.framework.sf_power_profiles_v2_low_power.name}
+                    .p_ioport_pin_tbl_enter     = &amp;${module.framework.sf_power_profiles_v2_low_power.pin_table_enter},
+                #else
+                    .p_ioport_pin_tbl_enter     = NULL,
+                #endif
+                .p_lower_lvl_lpm            = &amp;${module.framework.sf_power_profiles_v2_low_power.requires.lpmv2::module.driver.lpmv2.name},
+                .p_callback                 = ${module.framework.sf_power_profiles_v2_low_power.p_callback},
+                .p_context                  = &amp;${module.framework.sf_power_profiles_v2_low_power.name},
+                .p_extend                   = NULL,
+            };
+            /************************************************************/
+            /** End PPM V2 Low Power Profile ****************************/
+            /************************************************************/
+        </declarations>
+    </module>
+</synergyModuleDescription>

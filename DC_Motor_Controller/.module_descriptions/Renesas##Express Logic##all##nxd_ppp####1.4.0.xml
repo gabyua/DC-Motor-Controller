@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<synergyModuleDescription>
+	<config id="config.el.nxd_ppp_common" path="ssp_cfg/framework/el/nxd_ppp_common_cfg.h" version="0">
+        <property default="TX_NO_TIME_SLICE" display="Internal thread time slicing interval (ticks)" id="config.el.nxd_ppp_common.thread_time_slice">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp_common.thread_time_slice}")  &amp;&amp; ("${config.el.nxd_ppp_common.thread_time_slice}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="1500" display="Maximum receive unit (MRU) size (bytes)" id="config.el.nxd_ppp_common.mru">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp_common.mru}")  &amp;&amp; ("${config.el.nxd_ppp_common.mru}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="1500" display="Minimum MRU size in LCP configure request message (bytes)" id="config.el.nxd_ppp_common.minimum_mru">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp_common.minimum_mru}")  &amp;&amp; ("${config.el.nxd_ppp_common.minimum_mru}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="2" display="Receive serial buffer size in multiples of MRU" id="config.el.nxd_ppp_common.serial_buffer_size">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp_common.serial_buffer_size}")  &amp;&amp; ("${config.el.nxd_ppp_common.serial_buffer_size}" &gt;= 0)
+            </constraint>
+        </property>        
+        <property default="32" display="User name buffer size for PAP login (bytes)" id="config.el.nxd_ppp_common.name_size">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp_common.name_size}")  &amp;&amp; ("${config.el.nxd_ppp_common.name_size}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="32" display="Password buffer size for PAP login (bytes)" id="config.el.nxd_ppp_common.password_size">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp_common.password_size}")  &amp;&amp; ("${config.el.nxd_ppp_common.password_size}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="32" display="Random value buffer size for CHAP challenge (bytes)" id="config.el.nxd_ppp_common.value_size">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp_common.value_size}")  &amp;&amp; ("${config.el.nxd_ppp_common.value_size}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="16" display="Hash value buffer size for CHAP challenge (bytes)" id="config.el.nxd_ppp_common.hashed_value_size">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp_common.hashed_value_size}")  &amp;&amp; ("${config.el.nxd_ppp_common.hashed_value_size}" &gt;= 0)
+            </constraint>
+        </property>        
+		<content>
+            #define NX_PPP_THREAD_TIME_SLICE                (${config.el.nxd_ppp_common.thread_time_slice})
+            #define NX_PPP_MRU                              (${config.el.nxd_ppp_common.mru})
+            #define NX_PPP_MINIMUM_MRU                      (${config.el.nxd_ppp_common.minimum_mru})
+            #define NX_PPP_SERIAL_BUFFER_SIZE               (NX_PPP_MRU * ${config.el.nxd_ppp_common.serial_buffer_size})
+            #define NX_PPP_NAME_SIZE                        (${config.el.nxd_ppp_common.name_size})
+            #define NX_PPP_PASSWORD_SIZE                    (${config.el.nxd_ppp_common.password_size})
+            #define NX_PPP_VALUE_SIZE                       (${config.el.nxd_ppp_common.value_size})
+            #define NX_PPP_HASHED_VALUE_SIZE                (${config.el.nxd_ppp_common.hashed_value_size})
+        </content>
+    </config>
+    <module config="config.el.nxd_ppp_common" display="X-Ware|NetX Duo|Protocols|NetX Duo PPP Common" id="module.el.nxd_ppp_common" common="1" version="1">
+        <requires interface="_rtos" />
+        <requires interface="interface.el.nxd_common" display="Add NetX Duo Common" />
+        <requires interface="interface.el.nx_md5" display="Add NetX MD5" />
+
+        <!-- NetX and NetX Duo -->
+        <provides interface="interface.el.nx_ppp_common" />
+        <!-- NetX Duo only -->
+        <provides interface="interface.el.nxd_ppp_common" />
+        
+        <property default="g_nxd_ppp_common${_instance}" display="Name" id="module.el.nxd_ppp_common.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.el.nxd_ppp_common.name}")</constraint>
+        </property>
+        <includes>
+            #include "nx_ppp.h"
+        </includes>
+    </module>
+    <config id="config.el.nxd_ppp" path="ssp_cfg/framework/el/nxd_ppp_cfg.h" version="0">
+        <property default="config.el.nxd_ppp.chap_support.enable" display="CHAP authentication support" id="config.el.nxd_ppp.chap_support">
+            <option display="Disable" id="config.el.nxd_ppp.chap_support.disable" value="0"/>
+            <option display="Enable" id="config.el.nxd_ppp.chap_support.enable" value="1"/>
+        </property>
+        <property default="config.el.nxd_ppp.pap_support.enable" display="PAP authentication support" id="config.el.nxd_ppp.pap_support">
+            <option display="Disable" id="config.el.nxd_ppp.pap_support.disable" value="0"/>
+            <option display="Enable" id="config.el.nxd_ppp.pap_support.enable" value="1"/>
+        </property>
+        <property default="config.el.nxd_ppp.dns_option.enable" display="DNS Option in IPCP response support" id="config.el.nxd_ppp.dns_option">
+            <option display="Disable" id="config.el.nxd_ppp.dns_option.disable" value="0"/>
+            <option display="Enable" id="config.el.nxd_ppp.dns_option.enable" value="1"/>
+        </property>
+        <property default="2" display="Maximum DNS address request retries from the peer" id="config.el.nxd_ppp.address_max_retries">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.address_max_retries}")  &amp;&amp; ("${config.el.nxd_ppp.address_max_retries}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="4" display="Data packet allocation timeout (seconds)" id="config.el.nxd_ppp.timeout">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.timeout}")  &amp;&amp; ("${config.el.nxd_ppp.timeout}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="1" display="Retry interval (seconds)" id="config.el.nxd_ppp.base_timeout">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.base_timeout}")  &amp;&amp; ("${config.el.nxd_ppp.base_timeout}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="4" display="Maximum retries for reallocating packet" id="config.el.nxd_ppp.receive_timeouts">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.receive_timeouts}")  &amp;&amp; ("${config.el.nxd_ppp.receive_timeouts}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="4" display="Maximum retries for protocol request response" id="config.el.nxd_ppp.protocol_timeout">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.protocol_timeout}")  &amp;&amp; ("${config.el.nxd_ppp.protocol_timeout}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="20" display="Maximum retries for LCP configure request" id="config.el.nxd_ppp.max_lcp_protocol_retries">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.max_lcp_protocol_retries}")  &amp;&amp; ("${config.el.nxd_ppp.max_lcp_protocol_retries}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="20" display="Maximum retries for PAP authentication request" id="config.el.nxd_ppp.max_pap_protocol_retries">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.max_pap_protocol_retries}")  &amp;&amp; ("${config.el.nxd_ppp.max_pap_protocol_retries}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="20" display="Maximum retries for CHAP challenge message" id="config.el.nxd_ppp.max_chap_protocol_retries">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.max_chap_protocol_retries}")  &amp;&amp; ("${config.el.nxd_ppp.max_chap_protocol_retries}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="20" display="Maximum retries for IPCP configure request" id="config.el.nxd_ppp.max_ipcp_protocol_retries">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${config.el.nxd_ppp.max_ipcp_protocol_retries}")  &amp;&amp; ("${config.el.nxd_ppp.max_ipcp_protocol_retries}" &gt;= 0)
+            </constraint>
+        </property>
+        <content>
+            #if(!${config.el.nxd_ppp.chap_support})
+            #define NX_PPP_DISABLE_CHAP
+            #endif
+            #if(!${config.el.nxd_ppp.pap_support})
+            #define NX_PPP_DISABLE_PAP
+            #endif
+            #if(!${config.el.nxd_ppp.dns_option})
+            #define NX_PPP_DNS_OPTION_DISABLE
+            #endif
+            #define NX_PPP_DNS_ADDRESS_MAX_RETRIES          (${config.el.nxd_ppp.address_max_retries})
+            #define NX_PPP_BASE_TIMEOUT                     (${config.el.nxd_ppp.base_timeout} * NX_IP_PERIODIC_RATE )
+            #define NX_PPP_TIMEOUT                          (${config.el.nxd_ppp.timeout} * NX_IP_PERIODIC_RATE )
+            #define NX_PPP_RECEIVE_TIMEOUTS                 (${config.el.nxd_ppp.receive_timeouts})
+            #define NX_PPP_PROTOCOL_TIMEOUT                 (${config.el.nxd_ppp.protocol_timeout})
+            #define NX_PPP_MAX_LCP_PROTOCOL_RETRIES         (${config.el.nxd_ppp.max_lcp_protocol_retries})
+            #define NX_PPP_MAX_PAP_PROTOCOL_RETRIES         (${config.el.nxd_ppp.max_pap_protocol_retries})
+            #define NX_PPP_MAX_CHAP_PROTOCOL_RETRIES        (${config.el.nxd_ppp.max_chap_protocol_retries})
+            #define NX_PPP_MAX_IPCP_PROTOCOL_RETRIES        (${config.el.nxd_ppp.max_ipcp_protocol_retries})
+        </content>
+    </config>
+    <module config="config.el.nxd_ppp" display="X-Ware|NetX Duo|${module.framework.sf_el_nx.name} NetX Duo Port using PPP on nxd_ppp" common="100" id="module.el.nxd_ppp" version="1">
+        <constraint display="Do not use sf_el_nx_comms or sf_comms_telnet modules">
+            !testExists("${interface.framework.sf_comms_on_sf_el_nx_comms}") &amp;&amp; !testExists("${interface.framework.sf_comms_on_sf_comms_telnet}")
+        </constraint>
+        <requires interface="_rtos" />
+        <requires id="module.el.nxd_ppp.requires.nxd.packet_pool" interface="interface.el.nxd.packet_pool" display="Add NetX Duo Packet Pool" />
+        <requires id="module.el.nxd_ppp.requires.nxd_ppp_common" interface="interface.el.nxd_ppp_common" display="Add NetX Duo PPP Common" />
+        <requires id="module.el.nxd_ppp.requires.sf_comms" interface="interface.framework.sf_comms" display="Add COMMS Framework" >
+            <override property="module.framework.sf_comms.init" value="module.framework.sf_comms.init.disable"/>
+        </requires>
+        <provides interface="interface.framework.sf_el_nx" />
+        <provides interface="interface.framework.sf_el_nx_on_nxd_ppp" />
+        <provides interface="interface.framework.sf_el_nx.${module.framework.sf_el_nx.name}" />
+        <property default="g_nxd_ppp${_instance}" display="Name" id="module.framework.sf_el_nx.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_el_nx.name}")</constraint>
+        </property>
+        <property default="2" display="Internal thread priority" id="module.el.nxd_ppp.priority">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${module.el.nxd_ppp.priority}") &amp;&amp; ("${module.el.nxd_ppp.priority}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="2048" display="Internal thread stack size (bytes)" id="module.el.nxd_ppp.stack_size">
+            <constraint display="Value must be a non-negative integer and divisible by 8">
+                testInteger("${module.el.nxd_ppp.stack_size}")  &amp;&amp; (("${module.el.nxd_ppp.stack_size}" % 8) == 0)
+            </constraint>
+        </property>
+        <property default="10" display="Read thread priority" id="module.el.nxd_ppp.read_thread_priority">
+            <constraint display="Value must be a non-negative integer">
+                testInteger("${module.el.nxd_ppp.read_thread_priority}")  &amp;&amp; ("${module.el.nxd_ppp.read_thread_priority}" &gt;= 0)
+            </constraint>
+        </property>
+        <property default="1024" id="module.el.nxd_ppp.read_thread_stack_size">
+            <constraint display="Value must be a non-negative integer and divisible by 8">
+                testInteger("${module.el.nxd_ppp.read_thread_stack_size}")  &amp;&amp; (("${module.el.nxd_ppp.read_thread_stack_size}" % 8) == 0)
+            </constraint>
+        </property>
+        <property default="" id="module.el.nxd_ppp.ip">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.el.nxd_ppp.ip}")</constraint>
+        </property>
+        <property default="192.168.0.100" id="module.el.nxd_ppp.server_address">
+            <constraint display="Requires address specified in standard format nnn.nnn.nnn.nnn">/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test("${module.el.nxd_ppp.server_address}") &amp;&amp; "${module.el.nxd_ppp.server_address}".split(".").length == 4</constraint>
+            <export>"${module.el.nxd_ppp.server_address}".replace(/\./g,",")</export> <!-- replace all dots with commas on export -->
+        </property>
+        <property default="192.168.0.111" display="Peer IPv4 Address" id="module.el.nxd_ppp.peer_address">
+            <constraint display="Requires address specified in standard format nnn.nnn.nnn.nnn">/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test("${module.el.nxd_ppp.peer_address}") &amp;&amp; "${module.el.nxd_ppp.peer_address}".split(".").length == 4</constraint>
+            <export>"${module.el.nxd_ppp.peer_address}".replace(/\./g,",")</export> <!-- replace all dots with commas on export -->            
+        </property>
+        <property default="invalid_packet_handler" display="Name of invalid packet handler function" id="module.el.nxd_ppp.invalid_packet_handler">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.el.nxd_ppp.invalid_packet_handler}")</constraint>
+        </property>
+        <property default="nxd_ppp_init${_instance}" display="Name of generated initialization function" id="module.el.nxd_ppp.init_function">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.el.nxd_ppp.init_function}")</constraint>
+        </property>
+        <property default="module.el.nxd_ppp.init.enable" display="Auto Initialization" id="module.el.nxd_ppp.init">
+            <option display="Enable"  id="module.el.nxd_ppp.init.enable"  value="1"/>
+            <option display="Disable" id="module.el.nxd_ppp.init.disable" value="0"/>
+        </property>
+        <header>
+            void ${module.el.nxd_ppp.init_function}(void);
+            extern void ${module.el.nxd_ppp.invalid_packet_handler}(NX_PACKET *packet_ptr);
+        </header>
+        <includes>
+        </includes>
+        <declarations>
+            NX_PPP  ${module.framework.sf_el_nx.name}_instance;
+            #if defined(__ICCARM__)
+            #pragma data_alignment = BSP_STACK_ALIGNMENT
+            #endif
+            TX_THREAD ${module.framework.sf_el_nx.name}_in_byte_thread;
+            static uint8_t ${module.framework.sf_el_nx.name}_stack_memory[${module.el.nxd_ppp.stack_size}]  BSP_PLACE_IN_SECTION_V2(".stack.${module.framework.sf_el_nx.name}") BSP_ALIGN_VARIABLE_V2(BSP_STACK_ALIGNMENT);;
+            static uint8_t ${module.framework.sf_el_nx.name}_in_byte_thread_stack[${module.el.nxd_ppp.read_thread_stack_size}] BSP_PLACE_IN_SECTION_V2(".stack.${module.framework.sf_el_nx.name}_in_byte_thread") BSP_ALIGN_VARIABLE_V2(BSP_STACK_ALIGNMENT);
+            VOID  (* ${module.framework.sf_el_nx.name})(NX_IP_DRIVER * driver_req_ptr) = nx_ppp_driver;
+            #if defined(__ICCARM__)
+            #define ${module.framework.sf_el_nx.name}_err_callback_WEAK_ATTRIBUTE
+            #pragma weak ${module.framework.sf_el_nx.name}_err_callback  = ${module.framework.sf_el_nx.name}_err_callback_internal
+            #elif defined(__GNUC__)
+            #define ${module.framework.sf_el_nx.name}_err_callback_WEAK_ATTRIBUTE   __attribute__ ((weak, alias("${module.framework.sf_el_nx.name}_err_callback_internal")))
+            #endif
+            void ${module.framework.sf_el_nx.name}_err_callback(void * p_instance, void * p_data) ${module.framework.sf_el_nx.name}_err_callback_WEAK_ATTRIBUTE;
+            /*******************************************************************************************************************//**
+             * @brief      This is a weak example initialization error function.
+             *             It should be overridden by defining a user  function with the prototype below.
+             *             - void ${module.framework.sf_el_nx.name}_err_callback(void * p_instance, void * p_data)
+             *
+             * @param[in]  p_instance arguments used to identify which instance caused the error and p_data Callback arguments
+                             used to identify what error caused the callback.
+             **********************************************************************************************************************/
+            void ${module.framework.sf_el_nx.name}_err_callback_internal(void * p_instance, void * p_data);
+            void ${module.framework.sf_el_nx.name}_err_callback_internal(void * p_instance, void * p_data)
+            {
+                /** Suppress compiler warning for not using parameters. */
+                SSP_PARAMETER_NOT_USED(p_instance);
+                SSP_PARAMETER_NOT_USED(p_data);
+                /** An error has occurred. Please check function arguments for more information. */
+                BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+            }
+            /*******************************************************************************************************************//**
+             * @brief      This function is handler for sending data byte using PPP.
+             *             - static void ${module.framework.sf_el_nx.name}_serial_out_byte_handler(UCHAR out_byte)
+             *
+             * @param[in]  out_byte is data byte that needs to be sent.
+             **********************************************************************************************************************/
+            static void ${module.framework.sf_el_nx.name}_serial_out_byte_handler(UCHAR out_byte);
+            static void ${module.framework.sf_el_nx.name}_serial_out_byte_handler(UCHAR out_byte)
+            {
+                ssp_err_t ${module.framework.sf_el_nx.name}_serial_out_byte_handler_error = SSP_SUCCESS;
+                ${module.framework.sf_el_nx.name}_serial_out_byte_handler_error = ${module.el.nxd_ppp.requires.sf_comms::module.framework.sf_comms.name}.p_api->write(${module.el.nxd_ppp.requires.sf_comms::module.framework.sf_comms.name}.p_ctrl, (uint8_t const * const )&amp;out_byte, 1, TX_WAIT_FOREVER);
+                if( SSP_SUCCESS != ${module.framework.sf_el_nx.name}_serial_out_byte_handler_error )
+                {
+                    ${module.framework.sf_el_nx.name}_err_callback((void *)&amp;${module.framework.sf_el_nx.name},&amp;${module.framework.sf_el_nx.name}_serial_out_byte_handler_error);
+                }
+            }
+            /*******************************************************************************************************************//**
+             * @brief     This function is called by receive thread and reads one byte from comms device in never ending loop
+             *            Read byte is then passed to PPP module
+             *            - static void ${module.framework.sf_el_nx.name}_in_byte_thread_func(ULONG entry_input)
+             **********************************************************************************************************************/
+            static void ${module.framework.sf_el_nx.name}_in_byte_thread_func(ULONG entry_input);
+            static void ${module.framework.sf_el_nx.name}_in_byte_thread_func(ULONG entry_input)
+            {
+                SSP_PARAMETER_NOT_USED(entry_input);
+                UCHAR in_byte;
+                ssp_err_t ${module.framework.sf_el_nx.name}_in_byte_thread_func_error = SSP_SUCCESS;
+                while(1)
+                {
+                    ${module.framework.sf_el_nx.name}_in_byte_thread_func_error = ${module.el.nxd_ppp.requires.sf_comms::module.framework.sf_comms.name}.p_api->read(${module.el.nxd_ppp.requires.sf_comms::module.framework.sf_comms.name}.p_ctrl, (uint8_t * const )&amp;in_byte, 1, TX_WAIT_FOREVER);
+                    if ( SSP_SUCCESS != ${module.framework.sf_el_nx.name}_in_byte_thread_func_error )
+                    {
+                        ${module.framework.sf_el_nx.name}_err_callback((void *)&amp;${module.framework.sf_el_nx.name},&amp;${module.framework.sf_el_nx.name}_in_byte_thread_func_error);
+                    }
+                    nx_ppp_byte_receive(&amp;${module.framework.sf_el_nx.name}_instance, in_byte);
+                }
+            }            
+            /*******************************************************************************************************************//**
+             * @brief     Initialization function that the user can choose to have called automatically during thread entry.
+             *            The user can call this function at a later time if desired using the prototype below.
+             *            - void ${module.el.nxd_ppp.init_function}(void)
+             **********************************************************************************************************************/
+            void ${module.el.nxd_ppp.init_function}(void)
+            {
+                UINT ${module.el.nxd_ppp.init_function}_error = NX_SUCCESS;
+                ${module.el.nxd_ppp.requires.sf_comms::module.framework.sf_comms.init_function}();
+                ${module.el.nxd_ppp.init_function}_error = tx_thread_create (&amp;${module.framework.sf_el_nx.name}_in_byte_thread, (CHAR *) "NXD PPP Byte IN Thread", ${module.framework.sf_el_nx.name}_in_byte_thread_func,
+                                        (ULONG) NULL, &amp;${module.framework.sf_el_nx.name}_in_byte_thread_stack[0], ${module.el.nxd_ppp.read_thread_stack_size},
+                                        ${module.el.nxd_ppp.read_thread_priority}, 1, 1, TX_AUTO_START);
+                if (TX_SUCCESS != ${module.el.nxd_ppp.init_function}_error)
+                {
+                    ${module.framework.sf_el_nx.name}_err_callback((void *)&amp;${module.framework.sf_el_nx.name},&amp;${module.el.nxd_ppp.init_function}_error);
+                }
+                ${module.el.nxd_ppp.init_function}_error =  nx_ppp_create(&amp;${module.framework.sf_el_nx.name}_instance,
+                                                              "NXD PPP Instance",
+                                                              &amp;${module.el.nxd_ppp.ip},
+                                                              &amp;${module.framework.sf_el_nx.name}_stack_memory[0],
+                                                              ${module.el.nxd_ppp.stack_size},
+                                                              ${module.el.nxd_ppp.priority},
+                                                              &amp;${module.el.nxd_ppp.requires.nxd.packet_pool::module.el.nx.packet_pool.name},
+                                                              ${module.el.nxd_ppp.invalid_packet_handler},
+                                                              ${module.framework.sf_el_nx.name}_serial_out_byte_handler);
+                if ( NX_SUCCESS != ${module.el.nxd_ppp.init_function}_error)
+                {
+                    ${module.framework.sf_el_nx.name}_err_callback((void *)&amp;${module.framework.sf_el_nx.name},&amp;${module.el.nxd_ppp.init_function}_error);
+                }
+                /* Define IP address. This PPP instance is effectively the peer since it doesn't have any IP addresses. */
+                ${module.el.nxd_ppp.init_function}_error =  nx_ppp_ip_address_assign(&amp;${module.framework.sf_el_nx.name}_instance, IP_ADDRESS(${module.el.nxd_ppp.server_address}),  IP_ADDRESS(${module.el.nxd_ppp.peer_address}));
+                /* Check for PPP IP address assign error.   */
+                if (${module.el.nxd_ppp.init_function}_error)
+                {
+                    ${module.framework.sf_el_nx.name}_err_callback((void *)&amp;${module.framework.sf_el_nx.name},&amp;${module.el.nxd_ppp.init_function}_error);
+                }
+            }
+        </declarations>
+        <init>
+            /**  Call initialization function if user has selected to do so. */
+            #if (${module.el.nxd_ppp.init})
+                ${module.el.nxd_ppp.init_function}();
+            #endif
+        </init>
+    </module>
+</synergyModuleDescription>
