@@ -1,9 +1,17 @@
 /* Main Thread entry function */
+//#include <time.h>
+//#include <stdio.h>
 #include "main_thread.h"
 #include "bsp_api.h"
 #include "gx_api.h"
 #include "gui/guiapp_specifications.h"
 #include "gui/guiapp_resources.h"
+#include "common.h"
+#include "adc.h"
+#include "diagnostics.h"
+#include "sensor.h"
+#include "controller.h"
+#include "init.h"
 
 #if defined(BSP_BOARD_S7G2_SK)
 #include "hardware/lcd.h"
@@ -14,6 +22,7 @@
  ***********************************************************************************************************************/
 static bool ssp_touch_to_guix(sf_touch_panel_payload_t * p_touch_payload, GX_EVENT * g_gx_event);
 void main_thread_entry(void);
+void updateDisplay(void);
 
 #if defined(BSP_BOARD_S7G2_SK)
 void g_lcd_spi_callback(spi_callback_args_t * p_args);
@@ -23,6 +32,26 @@ void g_lcd_spi_callback(spi_callback_args_t * p_args);
     Private global variables
  ***********************************************************************************************************************/
 static GX_EVENT g_gx_event;
+
+GX_EVENT gxUpdateEvent =
+{
+ .gx_event_type = SWVERSION_UPDATE_EVENT,
+ .gx_event_sender = GX_ID_NONE,
+ .gx_event_target = 0,
+ .gx_event_display_handle = GX_ID_NONE
+};
+
+/* Variables to control scheduler task manager */
+int int_minorFrame = 0;
+int int_initCounter = 0;
+int int_runPWM = 0;
+
+/* Variables to display information on LCD display */
+int int_sensorValue = 0;
+int int_pwm = 10;
+int int_setPoint = 0;
+int int_speed = 0;
+int int_voltage = 0;
 
 GX_WINDOW_ROOT * p_window_root;
 extern GX_CONST GX_STUDIO_WIDGET *guiapp_widget_table[];
@@ -137,6 +166,12 @@ void main_thread_entry(void) {
     }
 #endif
 
+    //Send GUIX Event to update SW Version
+    gx_system_event_send(&gxUpdateEvent);
+
+    // Initialize DC Motor Controller Modules
+    initializeDCMotorModules();
+
 	while(1)
 	{
 		bool new_gui_event = false;
@@ -191,16 +226,21 @@ static bool ssp_touch_to_guix(sf_touch_panel_payload_t * p_touch_payload, GX_EVE
 	case SF_TOUCH_PANEL_EVENT_DOWN:
 		gx_event->gx_event_type = GX_EVENT_PEN_DOWN;
 		break;
+
 	case SF_TOUCH_PANEL_EVENT_UP:
 		gx_event->gx_event_type = GX_EVENT_PEN_UP;
 		break;
+
 	case SF_TOUCH_PANEL_EVENT_HOLD:
+
 	case SF_TOUCH_PANEL_EVENT_MOVE:
 		gx_event->gx_event_type = GX_EVENT_PEN_DRAG;
 		break;
+
 	case SF_TOUCH_PANEL_EVENT_INVALID:
 		send_event = false;
 		break;
+
 	default:
 		break;
 	}
@@ -231,3 +271,192 @@ void g_lcd_spi_callback(spi_callback_args_t * p_args)
     tx_semaphore_ceiling_put(&g_main_semaphore_lcdc, 1);
 }
 #endif
+
+void sensor_hall(external_irq_callback_args_t *p_args)
+{
+   //SENSOR
+    int_sensorValue = int_sensorValue + 1;
+}
+
+/*int int_initCounter = 0;
+int int_runPWM = 0;*/
+
+
+void scheduler_timer(timer_callback_args_t *p_args)
+{
+    if(int_runPWM == 0)
+    {
+        if(int_initCounter < 6)
+        {
+            int_initCounter++;
+        }
+        else
+        {
+            int_runPWM = 1;
+            //Start Sensor reading
+            g_external_irq0.p_api->open(g_external_irq0.p_ctrl,g_external_irq0.p_cfg);
+        }
+    }
+
+    //clock_t t;
+    //t = clock();
+
+    switch(int_minorFrame){
+        case 0: //100ms
+            readADCValue();
+
+            readSensor(int_sensorValue);
+            int_sensorValue = 0;
+
+            if(int_runPWM == 1)
+            {
+                calculatePWM(getSetPoint(),getSpeed());
+                int_pwm = getPWM();
+            }
+
+            int_minorFrame++;
+        break;
+        case 1: //200ms
+            readADCValue();
+
+            readSensor(int_sensorValue);
+            int_sensorValue = 0;
+            int_speed = getSpeed();
+
+            if(int_runPWM == 1)
+            {
+                calculatePWM(getSetPoint(),getSpeed());
+                int_pwm = getPWM();
+            }
+
+            int_minorFrame++;
+        break;
+        case 2:
+            readADCValue();
+            runDiagnostics(getADC());
+            int_setPoint = getSetPoint();
+            int_voltage = getVoltage();
+
+            readSensor(int_sensorValue);
+            int_sensorValue = 0;
+
+            if(int_runPWM == 1)
+            {
+                calculatePWM(getSetPoint(),getSpeed());
+                int_pwm = getPWM();
+            }
+
+            updateDisplay();
+
+            int_minorFrame++;
+        break;
+        case 3:
+            readADCValue();
+
+            readSensor(int_sensorValue);
+            int_sensorValue = 0;
+            int_speed = getSpeed();
+
+            if(int_runPWM == 1)
+            {
+                calculatePWM(getSetPoint(),getSpeed());
+                int_pwm = getPWM();
+            }
+
+            int_minorFrame++;
+            break;
+        case 4:
+            readADCValue();
+
+            readSensor(int_sensorValue);
+            int_sensorValue = 0;
+
+            if(int_runPWM == 1)
+            {
+                calculatePWM(getSetPoint(),getSpeed());
+                int_pwm = getPWM();
+            }
+
+            int_minorFrame++;
+            break;
+        case 5:
+            readADCValue();
+            runDiagnostics(getADC());
+            int_setPoint = getSetPoint();
+            int_voltage = getVoltage();
+
+            readSensor(int_sensorValue);
+            int_sensorValue = 0;
+            int_speed = getSpeed();
+
+            if(int_runPWM == 1)
+            {
+                calculatePWM(getSetPoint(),getSpeed());
+                int_pwm = getPWM();
+            }
+
+            updateDisplay();
+
+            int_minorFrame = 0;
+            break;
+        default:
+            int_minorFrame = 0;
+        break;
+    }
+
+    //t = clock() - t;
+    //double time_taken = ((double)t)/CLOCKS_PER_SEC;
+    //printf("The program took %f seconds to execute", time_taken);
+}
+
+void updateDisplay()
+{
+
+    /*Type casting for LCD display information */
+    //castIntToUint();
+
+    /* Send duty cycle information to LCD display */
+    gxUpdateEvent.gx_event_type = DC_UPDATE_EVENT;
+    gxUpdateEvent.gx_event_payload.gx_event_timer_id = int_pwm;
+    gx_system_event_send(&gxUpdateEvent);
+
+    /* Send DC Motor speed to LCD display */
+    gxUpdateEvent.gx_event_type = SPEED_UPDATE_EVENT;
+    gxUpdateEvent.gx_event_payload.gx_event_timer_id = int_speed;
+    gx_system_event_send(&gxUpdateEvent);
+
+    /* Send Set Point value to LCD display */
+    gxUpdateEvent.gx_event_type = SETPOINT_UPDATE_EVENT;
+    gxUpdateEvent.gx_event_payload.gx_event_timer_id = int_setPoint;
+    gx_system_event_send(&gxUpdateEvent);
+
+    /* Send diagnostics data to LCD display */
+    if(getShortBattery() == 1)
+    {
+        gxUpdateEvent.gx_event_type = SHORT_BATTERY_UPDATE_EVENT;
+        gxUpdateEvent.gx_event_payload.gx_event_timer_id = int_voltage;
+        gx_system_event_send(&gxUpdateEvent);
+    }
+    else if(getShortGround() == 1)
+    {
+        gxUpdateEvent.gx_event_type = SHORT_GROUND_UPDATE_EVENT;
+        gxUpdateEvent.gx_event_payload.gx_event_timer_id = int_voltage;
+        gx_system_event_send(&gxUpdateEvent);
+    }
+    else
+    {
+        gxUpdateEvent.gx_event_type = NO_SHORT_UPDATE_EVENT;
+        gxUpdateEvent.gx_event_payload.gx_event_timer_id = 0;
+        gx_system_event_send(&gxUpdateEvent);
+    }
+}
+
+/*
+if(c == 0){
+    g_ioport.p_api->pinWrite(IOPORT_PORT_06_PIN_00,IOPORT_LEVEL_HIGH);
+    c = 1;
+}else{
+    g_ioport.p_api->pinWrite(IOPORT_PORT_06_PIN_00,IOPORT_LEVEL_LOW);
+    c = 0;
+}
+*/
