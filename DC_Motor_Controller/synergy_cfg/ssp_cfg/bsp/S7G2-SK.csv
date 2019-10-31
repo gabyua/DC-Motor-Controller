@@ -148,7 +148,7 @@ SSI0: SSIWS"
 "P114","95","","","","","Disabled","","","BUS0: A02
 GLCDC0: LCD_DATA09
 SSI0: SSIRXD"
-"P115","96","GPIO","","Low","","Output mode (Initial Low)","CMOS","None","BUS0: A01
+"P115","96","GPIO","GPIO40","Low","","Output mode (Initial Low)","CMOS","None","BUS0: A01
 GLCDC0: LCD_DATA08
 SSI0: SSITXD"
 "P200","69","","","","","Disabled","","","IRQ0: NMI"
@@ -285,7 +285,7 @@ SDHI0: DAT7"
 GLCDC0: LCD_TCON1"
 "P315","57","GLCDC0_LCD_TCON0","GLCD_Controller__Pin_Option_B_LCD_TCON0_B","High","","Peripheral mode","CMOS","None","BUS0: A22
 GLCDC0: LCD_TCON0"
-"P400","1","GPIO","GPIO10","","IRQ0","Input mode","","None","ADC1: ADTRG
+"P400","1","IRQ0_IRQ00","GPIO10","","IRQ0","IRQ mode","","","ADC1: ADTRG
 GPT6: GTIOCA
 IIC0: SCL
 IRQ0: IRQ00
@@ -309,7 +309,7 @@ IRQ0: IRQ04
 RTC0: RTCIC0
 SCI7: RXD_MISO
 SCI7: SCL"
-"P403","4","RMII_MDC","Ethernet_Controller_1_RMII_ET1_MDC","Medium","","Peripheral mode","CMOS","None","AGT0: AGTIO
+"P403","4","","","","","Disabled","","","AGT0: AGTIO
 AGT1: AGTIO
 ETHERC1: MDC
 GPT3: GTIOCA
@@ -317,16 +317,16 @@ PDC0: PIXD7
 RTC0: RTCIC1
 SCI7: CTS_RTS_SS
 SSI0: SSISCK"
-"P404","5","RMII_MDIO","Ethernet_Controller_1_RMII_ET1_MDIO","Medium","","Peripheral mode","CMOS","None","ETHERC1: MDIO
+"P404","5","","","","","Disabled","","","ETHERC1: MDIO
 GPT3: GTIOCB
 PDC0: PIXD6
 RTC0: RTCIC2
 SSI0: SSIWS"
-"P405","6","RMII_TXD_EN","Ethernet_Controller_1_RMII_RMII1_TXD_EN","High","","Peripheral mode","CMOS","None","ETHERC1: TXD_EN
+"P405","6","","","","","Disabled","","","ETHERC1: TXD_EN
 GPT1: GTIOCA
 PDC0: PIXD5
 SSI0: SSITXD"
-"P406","7","RMII_TXD1","Ethernet_Controller_1_RMII_RMII1_TXD1","High","","Peripheral mode","CMOS","None","ETHERC1: TXD1
+"P406","7","GPT1_GTIOCB","","Low","","Peripheral mode","CMOS","None","ETHERC1: TXD1
 GPT1: GTIOCB
 PDC0: PIXD4
 SSI0: SSIRXD"
@@ -485,30 +485,30 @@ GLCDC0: LCD_DATA04"
 "P607","115","GLCDC0_LCD_DATA04","GLCD_Controller__Pin_Option_B_LCD_DATA04_B","High","","Peripheral mode","CMOS","None","GLCDC0: LCD_DATA04"
 "P608","99","GPIO","GPIO7","","","Input mode","","None","BUS0: A00_BC0_DQM1
 GLCDC0: LCD_DATA07"
-"P609","100","GPIO","","Low","","Output mode (Initial Low)","CMOS","None","BUS0: CS1_CKE
+"P609","100","GPIO","GPIO43","Low","","Output mode (Initial Low)","CMOS","None","BUS0: CS1_CKE
 GLCDC0: LCD_DATA06"
-"P610","101","GPIO","","Low","","Output mode (Initial Low)","CMOS","None","BUS0: CS0_WE
+"P610","101","GPIO","GPIO44","Low","","Output mode (Initial Low)","CMOS","None","BUS0: CS0_WE
 GLCDC0: LCD_DATA05"
-"P611","102","GPIO","","Low","","Output mode (Initial Low)","CMOS","None","BUS0: SDCS"
+"P611","102","GPIO","GPIO45","Low","","Output mode (Initial Low)","CMOS","None","BUS0: SDCS"
 "P612","103","","","","","Disabled","","","BUS0: D8_DQ8"
 "P613","104","GPIO","GPIO37","","","Input mode","","None","BUS0: D9_DQ9"
 "P614","105","GPIO","GPIO38","","","Input mode","","None","BUS0: D10_DQ10"
 "P615","106","GLCDC0_LCD_DATA10","GLCD_Controller__Pin_Option_B_LCD_DATA10_B","High","","Peripheral mode","CMOS","None","GLCDC0: LCD_DATA10"
-"P700","8","RMII_TXD0","Ethernet_Controller_1_RMII_RMII1_TXD0","High","","Peripheral mode","CMOS","None","ETHERC1: TXD0
+"P700","8","","","","","Disabled","","","ETHERC1: TXD0
 GPT5: GTIOCA
 PDC0: PIXD3"
-"P701","9","RMII_REF50CK","Ethernet_Controller_1_RMII_REF50CK1","High","","Peripheral mode","CMOS","None","ETHERC1: REF50CK
+"P701","9","","","","","Disabled","","","ETHERC1: REF50CK
 GPT5: GTIOCB
 PDC0: PIXD2"
-"P702","10","RMII_RXD0","Ethernet_Controller_1_RMII_RMII1_RXD0","High","","Peripheral mode","CMOS","None","ETHERC1: RXD0
+"P702","10","","","","","Disabled","","","ETHERC1: RXD0
 GPT6: GTIOCA
 PDC0: PIXD1"
-"P703","11","RMII_RXD1","Ethernet_Controller_1_RMII_RMII1_RXD1","High","","Peripheral mode","CMOS","None","ETHERC1: RXD1
+"P703","11","","","","","Disabled","","","ETHERC1: RXD1
 GPT6: GTIOCB
 PDC0: PIXD0"
-"P704","12","RMII_RX_ER","Ethernet_Controller_1_RMII_RMII1_RX_ER","High","","Peripheral mode","CMOS","None","ETHERC1: RX_ER
+"P704","12","","","","","Disabled","","","ETHERC1: RX_ER
 PDC0: HSYNC"
-"P705","13","RMII_CRS_DV","Ethernet_Controller_1_RMII_RMII1_CRS_DV","High","","Peripheral mode","CMOS","None","ETHERC1: CRS_DV
+"P705","13","","","","","Disabled","","","ETHERC1: CRS_DV
 PDC0: PIXCLK"
 "P706","14","SCI3_RXD_MISO","SCI3_RXD3_SCL3_MISO3","Medium","None","Peripheral mode","CMOS","None","IRQ0: IRQ07
 SCI3: RXD_MISO
@@ -536,7 +536,7 @@ GLCDC0: LCD_CLK"
 GLCDC0: LCD_DATA11"
 "P906","72","GLCDC0_LCD_DATA12","GLCD_Controller__Pin_Option_B_LCD_DATA12_B","High","","Peripheral mode","CMOS","None","BUS0: CS5
 GLCDC0: LCD_DATA12"
-"P907","71","GLCDC0_LCD_DATA13","","High","","Peripheral mode","CMOS","None","BUS0: CS6
+"P907","71","GLCDC0_LCD_DATA13","GLCD_Controller__Pin_Option_B_LCD_DATA13_B","High","","Peripheral mode","CMOS","None","BUS0: CS6
 GLCDC0: LCD_DATA13"
 "P908","70","GLCDC0_LCD_DATA14","GLCD_Controller__Pin_Option_B_LCD_DATA14_B","High","","Peripheral mode","CMOS","None","BUS0: CS7
 GLCDC0: LCD_DATA14"

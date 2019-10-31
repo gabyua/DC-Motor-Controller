@@ -24,12 +24,14 @@ RM := rm -rf
 -include synergy/ssp/src/driver/r_jpeg_common/subdir.mk
 -include synergy/ssp/src/driver/r_ioport/subdir.mk
 -include synergy/ssp/src/driver/r_icu/subdir.mk
+-include synergy/ssp/src/driver/r_gpt/subdir.mk
 -include synergy/ssp/src/driver/r_glcd/subdir.mk
 -include synergy/ssp/src/driver/r_fmi/subdir.mk
 -include synergy/ssp/src/driver/r_elc/subdir.mk
 -include synergy/ssp/src/driver/r_dtc/subdir.mk
 -include synergy/ssp/src/driver/r_cgc/hw/subdir.mk
 -include synergy/ssp/src/driver/r_cgc/subdir.mk
+-include synergy/ssp/src/driver/r_adc/subdir.mk
 -include synergy/ssp/src/bsp/mcu/s7g2/subdir.mk
 -include synergy/ssp/src/bsp/mcu/all/subdir.mk
 -include synergy/ssp/src/bsp/cmsis/Device/RENESAS/S7G2/Source/subdir.mk
@@ -42,6 +44,9 @@ RM := rm -rf
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(SX_DEPS)),)
+-include $(SX_DEPS)
+endif
 ifneq ($(strip $(ASM_DEPS)),)
 -include $(ASM_DEPS)
 endif
@@ -57,38 +62,43 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-DC_Motor_Controller.srec \
+PI_DSE.srec \
 
 SECONDARY_SIZE += \
-DC_Motor_Controller.siz \
+PI_DSE.siz \
 
 
 # All Target
-all: DC_Motor_Controller.elf secondary-outputs
+all: PI_DSE.elf secondary-outputs
 
 # Tool invocations
-DC_Motor_Controller.elf: $(OBJS) $(USER_OBJS)
+PI_DSE.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C Linker'
-	$(file > DC_Motor_Controller.elf.in,-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal  -g3 -T "C:\\diplomado\\dse_workspace\\GU\\DC_Motor_Controller\\script\\S7G2.ld" -Xlinker --gc-sections -L "C:\\diplomado\\dse_workspace\\GU\\DC_Motor_Controller\\synergy\\ssp\\src\\bsp\\cmsis\\DSP_Lib\\cm4_gcc" -L "C:\\diplomado\\dse_workspace\\GU\\DC_Motor_Controller\\synergy\\ssp\\src\\framework\\el\\gx\\cm4_gcc" -L "C:\\diplomado\\dse_workspace\\GU\\DC_Motor_Controller\\synergy\\ssp\\src\\framework\\el\\tx\\cm4_gcc" -Wl,-Map,"DC_Motor_Controller.map" --specs=nano.specs --specs=rdimon.specs -o "DC_Motor_Controller.elf" -Wl,--start-group $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--end-group)
-	arm-none-eabi-gcc @"DC_Motor_Controller.elf.in"
+	$(file > PI_DSE.elf.in,-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal  -g3 -T "C:\\Users\\SEI301\\Documents\\JC\\PI_DSE\\script\\S7G2.ld" -Xlinker --gc-sections -L "C:\\Users\\SEI301\\Documents\\JC\\PI_DSE\\synergy\\ssp\\src\\bsp\\cmsis\\DSP_Lib\\cm4_gcc" -L "C:\\Users\\SEI301\\Documents\\JC\\PI_DSE\\synergy\\ssp\\src\\framework\\el\\gx\\cm4_gcc" -L "C:\\Users\\SEI301\\Documents\\JC\\PI_DSE\\synergy\\ssp\\src\\framework\\el\\tx\\cm4_gcc" -Wl,-Map,"PI_DSE.map" --specs=nano.specs --specs=rdimon.specs -o "PI_DSE.elf" -Wl,--start-group $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--end-group)
+	arm-none-eabi-gcc @"PI_DSE.elf.in"
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-DC_Motor_Controller.srec: DC_Motor_Controller.elf
+PI_DSE.srec: PI_DSE.elf
 	@echo 'Invoking: Cross ARM GNU Create Flash Image'
-	arm-none-eabi-objcopy -O srec "DC_Motor_Controller.elf"  "DC_Motor_Controller.srec"
+	arm-none-eabi-objcopy -O srec "PI_DSE.elf"  "PI_DSE.srec"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-DC_Motor_Controller.siz: DC_Motor_Controller.elf
+PI_DSE.siz: PI_DSE.elf
 	@echo 'Invoking: Cross ARM GNU Print Size'
-	arm-none-eabi-size --format=berkeley "DC_Motor_Controller.elf"
+	arm-none-eabi-size --format=berkeley "PI_DSE.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
+ifneq ($(strip $(SX_DEPS)),)
+	-$(file > clean_SX_DEPS.tmp, $(SX_DEPS))
+	-@ xargs -s 6000 -t -a clean_SX_DEPS.tmp $(RM)
+	-@$(RM) clean_SX_DEPS.tmp
+endif
 ifneq ($(strip $(OBJS)),)
 	-$(file > clean_OBJS.tmp, $(OBJS))
 	-@ xargs -s 6000 -t -a clean_OBJS.tmp $(RM)
@@ -119,7 +129,7 @@ ifneq ($(strip $(C_DEPS)),)
 	-@ xargs -s 6000 -t -a clean_C_DEPS.tmp $(RM)
 	-@$(RM) clean_C_DEPS.tmp
 endif
-	-$(RM)  DC_Motor_Controller.elf
+	-$(RM)  PI_DSE.elf
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)
