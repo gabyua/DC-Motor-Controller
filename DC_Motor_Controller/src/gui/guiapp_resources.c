@@ -5,8 +5,8 @@
 /*  information please refer to the GUIX Studio user's guide, or visit our web */
 /*  site at www.expresslogic.com.                                              */
 /*                                                                             */
-/*  GUIX Studio Revision 5.4.0.0                                               */
-/*  Date (dd.mm.yyyy):  2. 2.2018   Time (hh:mm): 17:44                        */
+/*  GUIX Studio Revision 5.4.2.9                                               */
+/*  Date (dd.mm.yyyy): 30.10.2019   Time (hh:mm): 21:36                        */
 /*******************************************************************************/
 
 
@@ -18,21 +18,21 @@
 GX_CONST GX_COLOR display_1_theme_1_color_table[] =
 {
     0x00000000,
-    0x00007bef,
-    0x0000e71c,
+    0x0000018c,
+    0x0000198c,
     0x00009cce,
     0x000074d5,
-    0x00000000,
     0x0000ffff,
-    0x00000017,
+    0x0000ffff,
+    0x000073d0,
     0x00008410,
     0x0000dedb,
     0x0000e60c,
-    0x0000ffdc,
-    0x0000ff76,
-    0x00000000,
-    0x0000eedf,
-    0x0000ee76,
+    0x00006b6e,
+    0x000073d0,
+    0x0000ffff,
+    0x0000bdd7,
+    0x00007bef,
     0x0000ffff,
     0x0000e71c,
     0x00000000,
@@ -41,7 +41,11 @@ GX_CONST GX_COLOR display_1_theme_1_color_table[] =
     0x00000000,
     0x00008410,
     0x0000c618,
-    0x0000e60c
+    0x0000e60c,
+    0x0000a514,
+    0x00007bef,
+    0x0000ffff,
+    0x00007bef
 };
 
 
@@ -323,28 +327,71 @@ GX_CONST GX_PIXELMAP *display_1_theme_1_pixelmap_table[] =
 
 /* String values                                                               */
 
-GX_CONST GX_UBYTE display_1_HELLO_WORLD_English[25] = "Hello World (to window1)";
-GX_CONST GX_UBYTE display_1_CHECKBOX_TEXT_English[10] = "Press Me!";
-GX_CONST GX_UBYTE display_1_BUTTON_DISABLED_English[16] = "Stay in window1";
-GX_CONST GX_UBYTE display_1_BUTTON_ENABLED_English[13] = "Goto window2";
-GX_CONST GX_UBYTE display_1_INSTRUCT_CHECKBOX_English[30] = "Press \"Press Me!\" for more.";
-GX_CONST GX_UBYTE display_1_WINDOW1_English[8] = "Window1";
+GX_CONST GX_UBYTE display_1_PRINCIPAL_English[9] = "Regresar";
+GX_CONST GX_UBYTE display_1_DIAGNOSTICOS_English[17] = "Ver Diagnosticos";
 GX_CONST GX_UBYTE display_1_WINDOW2_English[8] = "Window2";
-GX_CONST GX_UBYTE display_1_INSTRUCT_BUTTON_English[23] = "Press to go to window2";
+GX_CONST GX_UBYTE display_1_DUTY_CYCLE_English[15] = "Duty Cycle: 0%";
+GX_CONST GX_UBYTE display_1_PROJECT_TEXT_English[21] = "Nombre del proyecto:";
+GX_CONST GX_UBYTE display_1_PROJECT_TEXT_2_English[22] = "Control Vel. Motor CD";
+GX_CONST GX_UBYTE display_1_SPEED_English[16] = "Speed: 0000 RPM";
+GX_CONST GX_UBYTE display_1_SW_VERSION_English[16] = "SW Version: 0.0";
+GX_CONST GX_UBYTE display_1_HW_VERSION_English[12] = "HW Version:";
+GX_CONST GX_UBYTE display_1_HW_VERSION_2_English[24] = "CESEQ-C001 / CESEQ-P001";
+GX_CONST GX_UBYTE display_1_PROGRAMERS_1_English[24] = "Programadores: TM1, TM2";
+GX_CONST GX_UBYTE display_1_SET_POINT_English[20] = "Set Point: 0000 RPM";
+GX_CONST GX_UBYTE display_1_DIAGNOSTICOS_1_English[28] = "Informacion de Diagnosticos";
+GX_CONST GX_UBYTE display_1_STRING_1_English[32] = "Programadores: Cerecero, Jenny.";
+GX_CONST GX_UBYTE display_1_STRING_2_English[13] = "Quiroz Diana";
+GX_CONST GX_UBYTE display_1_STRING_3_English[28] = "Programadores: Cerecero, J.";
+GX_CONST GX_UBYTE display_1_STRING_4_English[30] = "Developers: Ugarte, Gabriela}";
+GX_CONST GX_UBYTE display_1_STRING_5_English[29] = "Developers: Ugarte, Gabriela";
+GX_CONST GX_UBYTE display_1_STRING_6_English[13] = "Chavez, Jose";
+GX_CONST GX_UBYTE display_1_STRING_7_English[14] = "Project Name:";
+GX_CONST GX_UBYTE display_1_STRING_8_English[26] = "DC Speed Motor Controller";
+GX_CONST GX_UBYTE display_1_STRING_9_English[17] = "Project\'s Name:";
+GX_CONST GX_UBYTE display_1_STRING_10_English[12] = "Diagnostics";
+GX_CONST GX_UBYTE display_1_STRING_11_English[9] = "GO BACK}";
+GX_CONST GX_UBYTE display_1_STRING_12_English[8] = "GO BACK";
+GX_CONST GX_UBYTE display_1_STRING_13_English[9] = "GO BACK!";
+GX_CONST GX_UBYTE display_1_STRING_14_English[20] = "Diagnostics Window ";
+GX_CONST GX_UBYTE display_1_STRING_15_English[26] = "DC Motor Speed Controller";
 
 /* String Table for display_1 language English                                 */
 
-GX_CONST GX_UBYTE *display_1_English_string_table[9] =
+GX_CONST GX_UBYTE *display_1_English_string_table[32] =
 {
     GX_NULL,
-    display_1_HELLO_WORLD_English,
-    display_1_CHECKBOX_TEXT_English,
-    display_1_BUTTON_DISABLED_English,
-    display_1_BUTTON_ENABLED_English,
-    display_1_INSTRUCT_CHECKBOX_English,
-    display_1_WINDOW1_English,
+    display_1_PRINCIPAL_English,
+    display_1_DIAGNOSTICOS_English,
     display_1_WINDOW2_English,
-    display_1_INSTRUCT_BUTTON_English
+    display_1_DUTY_CYCLE_English,
+    display_1_PROJECT_TEXT_English,
+    display_1_PROJECT_TEXT_2_English,
+    display_1_SPEED_English,
+    display_1_SW_VERSION_English,
+    display_1_HW_VERSION_English,
+    display_1_HW_VERSION_2_English,
+    display_1_PROGRAMERS_1_English,
+    GX_NULL,
+    display_1_SET_POINT_English,
+    display_1_DIAGNOSTICOS_1_English,
+    GX_NULL,
+    GX_NULL,
+    display_1_STRING_1_English,
+    display_1_STRING_2_English,
+    display_1_STRING_3_English,
+    display_1_STRING_4_English,
+    display_1_STRING_5_English,
+    display_1_STRING_6_English,
+    display_1_STRING_7_English,
+    display_1_STRING_8_English,
+    display_1_STRING_9_English,
+    display_1_STRING_10_English,
+    display_1_STRING_11_English,
+    display_1_STRING_12_English,
+    display_1_STRING_13_English,
+    display_1_STRING_14_English,
+    display_1_STRING_15_English
 
 };
 
@@ -372,8 +419,8 @@ GX_THEME display_1_theme_1 =
         0,                                   /* scroll thumb pixelmap          */
         0,                                   /* scroll up pixelmap             */
         0,                                   /* scroll down pixelmap           */
-        GX_COLOR_ID_CANVAS,                  /* scroll thumb color             */
-        GX_COLOR_ID_CANVAS,                  /* scroll thumb border color      */
+        GX_COLOR_ID_SCROLL_BUTTON,           /* scroll thumb color             */
+        GX_COLOR_ID_SCROLL_BUTTON,           /* scroll thumb border color      */
         GX_COLOR_ID_SCROLL_BUTTON,           /* scroll button color            */
     },
     {
@@ -386,13 +433,13 @@ GX_THEME display_1_theme_1 =
         0,                                   /* scroll thumb pixelmap          */
         0,                                   /* scroll up pixelmap             */
         0,                                   /* scroll down pixelmap           */
-        GX_COLOR_ID_CANVAS,                  /* scroll thumb color             */
+        GX_COLOR_ID_SCROLL_BUTTON,           /* scroll thumb color             */
         GX_COLOR_ID_CANVAS,                  /* scroll thumb border color      */
         GX_COLOR_ID_SCROLL_BUTTON,           /* scroll button color            */
     },
     GX_SCROLLBAR_RELATIVE_THUMB|GX_SCROLLBAR_END_BUTTONS|GX_SCROLLBAR_VERTICAL,
     GX_SCROLLBAR_RELATIVE_THUMB|GX_SCROLLBAR_END_BUTTONS|GX_SCROLLBAR_HORIZONTAL,
-    25,                                      /* color table size               */
+    29,                                      /* color table size               */
     4,                                       /* font table size                */
     5,                                       /* pixelmap table size            */
     0                                        /* palette size                   */
