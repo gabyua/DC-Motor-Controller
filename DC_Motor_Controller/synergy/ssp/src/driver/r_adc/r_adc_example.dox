@@ -1,0 +1,230 @@
+/***********************************************************************************************************************
+ * Copyright [2015] Renesas Electronics Corporation and/or its licensors. All Rights Reserved.
+ *
+ * The contents of this file (the "contents") are proprietary and confidential to Renesas Electronics Corporation
+ * and/or its licensors ("Renesas") and subject to statutory and contractual protections.
+ *
+ * Unless otherwise expressly agreed in writing between Renesas and you: 1) you may not use, copy, modify, distribute,
+ * display, or perform the contents; 2) you may not use any name or mark of Renesas for advertising or publicity
+ * purposes or in connection with your use of the contents; 3) RENESAS MAKES NO WARRANTY OR REPRESENTATIONS ABOUT THE
+ * SUITABILITY OF THE CONTENTS FOR ANY PURPOSE; THE CONTENTS ARE PROVIDED "AS IS" WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTY, INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+ * NON-INFRINGEMENT; AND 4) RENESAS SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, OR CONSEQUENTIAL DAMAGES,
+ * INCLUDING DAMAGES RESULTING FROM LOSS OF USE, DATA, OR PROJECTS, WHETHER IN AN ACTION OF CONTRACT OR TORT, ARISING
+ * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE CONTENTS. Third-party contents included in this file may
+ * be subject to different terms.
+ **********************************************************************************************************************/
+/**********************************************************************************************************************
+* File Name    : r_adc.dox
+* Description  : Extra documentation for ADC module
+***********************************************************************************************************************
+* History : DD.MM.YYYY Version Description
+*           02.03.2015 1.00    Initial Release.
+***********************************************************************************************************************/
+
+/***********************************************************************************************************************
+Functions
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn      ssp_err_t R_ADC_Open(adc_ctrl_t * p_ctrl,  adc_cfg_t const * const p_cfg);
+ * 
+ *
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t   err;
+    
+    // Define a control block structure used in the API calls.
+    adc_ctrl_t adc_ctrl;
+    
+    // Define a configuration structure used in the API calls.
+    adc_cfg_t g_adc_example_cfg
+    {
+      .unit               = 1,                        // Specify ADC Unit 0 or 1
+      .resolution         = ADC_RESOLUTION_12_BIT,    // 8, 10, or 12-bit
+      .alignment          = ADC_ALIGNMENT_RIGHT,      // ignored if addition used
+      .add_average_count  = ADC_ADD_OFF,              // add or average samples
+      .clearing           = ADC_CLEAR_AFTER_READ_OFF, // clear after read
+      .trigger            = ADC_TRIGGER_SOFTWARE,     // default and Group A trigger source
+      .trigger_group_b    = ADC_TRIGGER_SYNC_ELC,     // valid only in group modes
+      .p_callback         = ADC_Test_Callback         // callback function name if interrupts used
+    } ;
+    
+
+    // Configure and open the ADC API
+    err = R_ADC_Open(&adc_ctrl, &g_adc_example_cfg);
+
+ 
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn      ssp_err_t R_ADC_SetSampleStateCount(adc_ctrl_t * p_ctrl, adc_sample_state_t * p_sample);
+
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error 
+    ssp_err_t   err;
+    
+    // Use the control variable used when opening the API
+    extern adc_ctrl_t ctrl;
+    
+    // Define a configuration structure used in the API call.
+    adc_sample_state_t g_adc_sample_state = 
+    {
+      .reg_id       = ADC_SAMPLE_STATE_TEMPERATURE,
+      .num_states   = 200       
+    } ;
+
+     // Set the sample state count for the channel 
+    err = R_ADC_SetSampleStateCount (&adc_ctrl, &g_adc_sample_state);
+   
+ * @endcode
+***********************************************************************************************************************/
+
+
+/*******************************************************************************************************************//**
+ * @fn      ssp_err_t R_ADC_ScanConfigure(adc_ctrl_t * p_ctrl, adc_channel_cfg_t const * const p_channel_cfg);
+
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error 
+    ssp_err_t   err;
+    
+    // Use the control variable used when opening the API
+    extern adc_ctrl_t ctrl;
+    // Define a channel configuration structure. This can be used to configure all the channels in the unit. 
+    // To enable more that one channel, OR them to the scan_mask which is a bitmask field.
+    adc_channel_cfg_t adc_channel_config = 
+    {
+      .scan_mask          = ADC_MASK_TEMPERATURE,     // Enable temperature channel
+      .scan_mask_group_b  = 0x0000,                   // valid for group modes
+      .priority_group_a   = ADC_GROUP_A_PRIORITY_OFF, // valid for group modes
+      .add_mask           = 0x0000,                   // valid if add enabled in Open()
+      .sample_hold_mask   = 0x00,                     // channels/bits 0-2
+      .sample_hold_states = ADC_SAMPLE_STATE_HOLD_COUNT_DEFAULT  // minimum .4us
+    } ;
+
+     // Configure the ADC scan
+     err = R_ADC_ScanConfigure(&ctrl, &adc_channel_config);
+        
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn      ssp_err_t R_ADC_ScanStart(adc_ctrl_t * p_ctrl);
+
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t   err;
+    
+    // Use the control variable used when opening the API
+    extern adc_ctrl_t ctrl;
+   
+    // Start the scan. 
+    err =  R_ADC_ScanStart (&ctrl);
+    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_ADC_ScanStop(adc_ctrl_t * p_ctrl);
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t   err;
+    
+    // Use the control variable used when opening the API
+    extern adc_ctrl_t ctrl;
+    
+    // Stop the scan. 
+    err =  R_ADC_ScanStop (&ctrl);
+      
+ * @endcode
+***********************************************************************************************************************/
+
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_ADC_Close(adc_ctrl_t * p_ctrl);
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t   err;
+    
+    // Use the control variable used when opening the API
+    extern adc_ctrl_t ctrl;    
+    
+    // Close the ADC API
+    err = R_ADC_Close(&ctrl);
+    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_ADC_CheckScanDone(adc_ctrl_t * p_ctrl);
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t   err;
+    
+    // Use the control variable used when opening the API
+    extern adc_ctrl_t ctrl;  
+        
+    // Request the status of the ADC Scan
+    err = R_ADC_CheckScanDone(&ctrl);
+    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_ADC_Read(adc_ctrl_t * p_ctrl, adc_register_t const  reg_id, adc_data_size_t * const p_data);
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t   err;
+    
+    // Use the control variable used when opening the API
+    extern adc_ctrl_t ctrl;  
+    
+    // Variable to read the data into
+    uint16_t data ;
+       
+    // Read the converted value for the specified channel
+    err = R_ADC_Read (&adc_ctrl, ADC_REG_TEMPERATURE, &data);
+      
+ * @endcode
+***********************************************************************************************************************/
+
+*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_ADC_VersionGet(ssp_version_t * const p_version);
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t   err;
+    
+    // Create a variable for the version information
+    ssp_version_t   version;
+    
+    // Request tha API and code version
+    err = R_ADC_VersionGet(&version);
+    
+ * @endcode
+***********************************************************************************************************************/

@@ -1,0 +1,14 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+arg1 = $(1)
+export PATH=C:\Program Files (x86)\GNU Tools ARM Embedded\4.9 2015q3\bin\;C:\Renesas\e2_studio\eclipse\..\Utilities;C:/Renesas/e2_studio/eclipse//features/com.renesas.jre.win32.win32.x86_1.8.0.65/jre/bin/client;C:/Renesas/e2_studio/eclipse//features/com.renesas.jre.win32.win32.x86_1.8.0.65/jre/bin;C:/Renesas/e2_studio/eclipse//features/com.renesas.jre.win32.win32.x86_1.8.0.65/jre/lib/i386;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\iCLS\;C:\Program Files\Intel\Intel(R) Management Engine Components\iCLS\;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\doxygen\bin;C:\Program Files\MATLAB\R2019a\bin;C:\Program Files\Git\cmd;C:\Users\SEI301\AppData\Local\Programs\Python\Python38-32\Scripts\;C:\Users\SEI301\AppData\Local\Programs\Python\Python38-32\;C:\Users\SEI301\AppData\Local\Microsoft\WindowsApps;C:\Users\SEI301\AppData\Local\GitHubDesktop\bin;C:\Program Files\CMake\bin;C:\Renesas\e2_studio\eclipse
+export TCINSTALL=C:\Program Files (x86)\GNU Tools ARM Embedded\4.9 2015q3$(call arg1,\)
+export CWD=$(CURDIR)
+export AMS_LICENSE_PATH=C:\Renesas\e2_studio\internal\projectgen\arm\licenses\SSP_License_Example_EvalLicense_20180105.xml
+export SECURE_BUILD_COMMAND=C:\Renesas\e2_studio\eclipse\/../\Utilities\\/isdebuild
+export TC_VERSION=4.9.3.20150529
+export AMS_KEEP_FILE=false
+export PWD=$(CURDIR)
+export GCC_VERSION=4.9.3

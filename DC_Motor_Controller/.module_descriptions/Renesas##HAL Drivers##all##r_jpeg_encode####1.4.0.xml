@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>  
+    <config id="config.driver.jpeg_encode" path="ssp_cfg/driver/r_jpeg_encode_cfg.h" version="0">
+        <property default="config.driver.jpeg_encode.param_checking_enable.bsp" display="Parameter Checking" id="config.driver.jpeg_encode.param_checking_enable">
+            <option display="Default (BSP)" id="config.driver.jpeg_encode.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled" id="config.driver.jpeg_encode.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled" id="config.driver.jpeg_encode.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>
+            #define JPEG_ENCODE_CFG_PARAM_CHECKING_ENABLE ${config.driver.jpeg_encode.param_checking_enable}
+        </content>
+    </config>
+    <module config="config.driver.jpeg_encode" display="Driver|Graphics|${module.driver.jpeg_encode.name} JPEG Encode Driver on r_jpeg_encode" id="module.driver.jpeg_encode" version="1">
+        <constraint display="Module instances must have unique names">
+            "${interface.driver.jpeg_encode.${module.driver.jpeg_encode.name}}" === "1"
+        </constraint>
+        <constraint display="Requires JPEG Common">
+            testExists("${module.driver.jpeg_encode_on_jpeg_encode.requires.jpeg_common::module.driver.jpeg_common.name}")
+        </constraint>
+        <constraint display="Requires JPEG compression/decompression process interrupt (JEDI) enabled">
+            "${module.driver.jpeg_encode.jedi_ipl}" != "board.icu.common.irq.disabled"
+        </constraint>
+        <constraint display="Requires JPEG data transfer interrupt request interrupt (JDTI) enabled">
+            "${module.driver.jpeg_encode.jdti_ipl}" != "board.icu.common.irq.disabled"
+        </constraint>
+        <requires id="module.driver.jpeg_encode_on_jpeg_encode.requires.jpeg_common" interface="interface.driver.jpeg_common"  display="Add JPEG Common" />
+        <provides interface="interface.driver.jpeg_encode" />
+        <provides interface="interface.driver.jpeg_encode_on_jpeg_encode" />
+        <provides interface="interface.driver.jpeg_encode.${module.driver.jpeg_encode.name}" />
+        <property id="module.driver.jpeg_encode.name" display="Name" default="g_jpeg_encode${_instance}">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.jpeg_encode.name}")</constraint>
+        </property>
+        <property default="800" display="RAW Image Vertical Resolution" id="module.driver.jpeg_encode.vertical_resolution">
+            <constraint display="Value cannot be greater than 65535 and must be a non-negative integer">testInteger("${module.driver.jpeg_encode.vertical_resolution}")&amp;&amp;(("${module.driver.jpeg_encode.vertical_resolution}") &gt; 0) &amp;&amp; (("${module.driver.jpeg_encode.vertical_resolution}") &lt;= 65535)</constraint>
+        </property>
+        <property default="480" display="RAW Image Horizontal Resolution" id="module.driver.jpeg_encode.horizontal_resolution">
+            <constraint display="Value cannot be greater than 65535 and must be a non-negative integer">testInteger("${module.driver.jpeg_encode.horizontal_resolution}")&amp;&amp;(("${module.driver.jpeg_encode.horizontal_resolution}") &gt; 0) &amp;&amp; (("${module.driver.jpeg_encode.horizontal_resolution}") &lt;= 65535)</constraint>
+        </property>
+        <property id="module.driver.jpeg_encode.input_data_format" display="Byte Order for Input Data Format" default="module.driver.jpeg_encode.input_data_format.normal">
+            <option id="module.driver.jpeg_encode.input_data_format.normal"    display="Normal byte order (1)(2)(3)(4)(5)(6)(7)(8)" value="JPEG_ENCODE_DATA_FORMAT_NORMAL" />
+            <option id="module.driver.jpeg_encode.input_data_format.b_swap"    display="Byte Swap (2)(1)(4)(3)(6)(5)(8)(7)" value="JPEG_ENCODE_DATA_FORMAT_BYTE_SWAP" />
+            <option id="module.driver.jpeg_encode.input_data_format.w_swap"    display="Word Swap (3)(4)(1)(2)(7)(8)(5)(6)" value="JPEG_ENCODE_DATA_FORMAT_WORD_SWAP" />
+            <option id="module.driver.jpeg_encode.input_data_format.wb_swap"   display="Word-Byte Swap (4)(3)(2)(1)(8)(7)(6)(5)" value="JPEG_ENCODE_DATA_FORMAT_WORD_BYTE_SWAP" />
+            <option id="module.driver.jpeg_encode.input_data_format.lw_swap"   display="Longword Swap (5)(6)(7)(8)(1)(2)(3)(4)" value="JPEG_ENCODE_DATA_FORMAT_LONGWORD_SWAP" />
+            <option id="module.driver.jpeg_encode.input_data_format.lwb_swap"  display="Longword-Byte Swap (6)(5)(8)(7)(2)(1)(4)(3)" value="JPEG_ENCODE_DATA_FORMAT_LONGWORD_BYTE_SWAP" />
+            <option id="module.driver.jpeg_encode.input_data_format.lww_swap"  display="Longword-Word Swap (7)(8)(5)(6)(3)(4)(1)(2)" value="JPEG_ENCODE_DATA_FORMAT_LONGWORD_WORD_SWAP" />
+            <option id="module.driver.jpeg_encode.input_data_format.lwwb_swap" display="Longword-Word-Byte Swap (8)(7)(6)(5)(4)(3)(2)(1)" value="JPEG_ENCODE_DATA_FORMAT_LONGWORD_WORD_BYTE_SWAP" />
+        </property>
+        <property id="module.driver.jpeg_encode.output_data_format" display="Byte Order for Output Data Format" default="module.driver.jpeg_encode.output_data_format.normal">
+            <option id="module.driver.jpeg_encode.output_data_format.normal" display="Normal byte order (1)(2)(3)(4)(5)(6)(7)(8)" value="JPEG_ENCODE_DATA_FORMAT_NORMAL" />
+            <option id="module.driver.jpeg_encode.output_data_format.b_swap" display="Byte Swap (2)(1)(4)(3)(6)(5)(8)(7)" value="JPEG_ENCODE_DATA_FORMAT_BYTE_SWAP" />
+            <option id="module.driver.jpeg_encode.output_data_format.w_swap" display="Word Swap (3)(4)(1)(2)(7)(8)(5)(6)" value="JPEG_ENCODE_DATA_FORMAT_WORD_SWAP" />
+            <option id="module.driver.jpeg_encode.output_data_format.wb_swap" display="Word-Byte Swap (4)(3)(2)(1)(8)(7)(6)(5)" value="JPEG_ENCODE_DATA_FORMAT_WORD_BYTE_SWAP" />
+            <option id="module.driver.jpeg_encode.output_data_format.lw_swap" display="Longword Swap (5)(6)(7)(8)(1)(2)(3)(4)" value="JPEG_ENCODE_DATA_FORMAT_LONGWORD_SWAP" />
+            <option id="module.driver.jpeg_encode.output_data_format.lwb_swap" display="Longword-Byte Swap (6)(5)(8)(7)(2)(1)(4)(3)" value="JPEG_ENCODE_DATA_FORMAT_LONGWORD_BYTE_SWAP" />
+            <option id="module.driver.jpeg_encode.output_data_format.lww_swap" display="Longword-Word Swap (7)(8)(5)(6)(3)(4)(1)(2)" value="JPEG_ENCODE_DATA_FORMAT_LONGWORD_WORD_SWAP" />
+            <option id="module.driver.jpeg_encode.output_data_format.lwwb_swap" display="Longword-Word-Byte Swap (8)(7)(6)(5)(4)(3)(2)(1)" value="JPEG_ENCODE_DATA_FORMAT_LONGWORD_WORD_BYTE_SWAP" />
+        </property>
+        <property default="512" display="Define Restart Marker" id="module.driver.jpeg_encode.DRI">
+            <constraint display="Value cannot be greater than 65535 and must be a non-negative integer">testInteger("${module.driver.jpeg_encode.DRI}")&amp;&amp;(("${module.driver.jpeg_encode.DRI}") &gt;= 0) &amp;&amp; (("${module.driver.jpeg_encode.DRI}") &lt;= 65535)</constraint>
+        </property>
+        <property default="50" display="Quality Factor" id="module.driver.jpeg_encode.quality">
+            <constraint display="Value cannot be greater than 100 and must be a non-negative integer">testInteger("${module.driver.jpeg_encode.quality}")&amp;&amp;(("${module.driver.jpeg_encode.quality}") &gt;= 0) &amp;&amp; (("${module.driver.jpeg_encode.quality}") &lt;= 100)</constraint>
+        </property>
+        <property default="NULL" display="Name of user callback function" id="module.driver.jpeg_encode.p_callback">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.jpeg_encode.p_callback}")</constraint>
+        </property>
+        <property default="board.icu.common.irq.disabled" display="Decompression Interrupt Priority" id="module.driver.jpeg_encode.jedi_ipl">
+            <option display="Priority 0 (highest)" id="board.icu.common.irq.priority0" value="(0)" />
+            <option display="Priority 1" id="board.icu.common.irq.priority1" value="(1)" />
+            <option display="Priority 2" id="board.icu.common.irq.priority2" value="(2)" />
+            <option display="Priority 3 (CM4: valid, CM0+: lowest - not valid if using ThreadX)" id="board.icu.common.irq.priority3" value="(3)" />
+            <option display="Priority 4 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority4" value="(4)" />
+            <option display="Priority 5 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority5" value="(5)" />
+            <option display="Priority 6 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority6" value="(6)" />
+            <option display="Priority 7 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority7" value="(7)" />
+            <option display="Priority 8 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority8" value="(8)" />
+            <option display="Priority 9 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority9" value="(9)" />
+            <option display="Priority 10 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority10" value="(10)" />
+            <option display="Priority 11 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority11" value="(11)" />
+            <option display="Priority 12 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority12" value="(12)" />
+            <option display="Priority 13 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority13" value="(13)" />
+            <option display="Priority 14 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority14" value="(14)" />
+            <option display="Priority 15 (CM4: lowest - not valid if using ThreadX, CM0+: invalid)" id="board.icu.common.irq.priority15" value="(15)" />
+            <option display="Disabled" id="board.icu.common.irq.disabled" value="(BSP_IRQ_DISABLED)" />
+        </property>
+        <property default="board.icu.common.irq.disabled" display="Data Transfer Interrupt Priority" id="module.driver.jpeg_encode.jdti_ipl">
+            <option display="Priority 0 (highest)" id="board.icu.common.irq.priority0" value="(0)" />
+            <option display="Priority 1" id="board.icu.common.irq.priority1" value="(1)" />
+            <option display="Priority 2" id="board.icu.common.irq.priority2" value="(2)" />
+            <option display="Priority 3 (CM4: valid, CM0+: lowest - not valid if using ThreadX)" id="board.icu.common.irq.priority3" value="(3)" />
+            <option display="Priority 4 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority4" value="(4)" />
+            <option display="Priority 5 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority5" value="(5)" />
+            <option display="Priority 6 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority6" value="(6)" />
+            <option display="Priority 7 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority7" value="(7)" />
+            <option display="Priority 8 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority8" value="(8)" />
+            <option display="Priority 9 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority9" value="(9)" />
+            <option display="Priority 10 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority10" value="(10)" />
+            <option display="Priority 11 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority11" value="(11)" />
+            <option display="Priority 12 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority12" value="(12)" />
+            <option display="Priority 13 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority13" value="(13)" />
+            <option display="Priority 14 (CM4: valid, CM0+: invalid)" id="board.icu.common.irq.priority14" value="(14)" />
+            <option display="Priority 15 (CM4: lowest - not valid if using ThreadX, CM0+: invalid)" id="board.icu.common.irq.priority15" value="(15)" />
+            <option display="Disabled" id="board.icu.common.irq.disabled" value="(BSP_IRQ_DISABLED)" />
+        </property>
+        <header>
+extern const jpeg_encode_instance_t ${module.driver.jpeg_encode.name};
+extern const jpeg_encode_cfg_t  ${module.driver.jpeg_encode.name}_cfg;
+#ifndef ${module.driver.jpeg_encode.p_callback}
+void ${module.driver.jpeg_encode.p_callback}(jpeg_encode_callback_args_t * p_args);
+#endif
+        </header>
+        <includes>
+#include &quot;r_jpeg_encode.h&quot;
+        </includes>
+        <declarations>
+        /* Luminance quantisation table */
+const uint8_t quant_table_0[] = {
+        /* Table K.1 ITU-T81 specification */
+        16, 11, 10, 16, 24,  40,  51,  61,
+        12, 12, 14, 19, 26,  58,  60,  55,
+        14, 13, 16, 24, 40,  57,  69,  56,
+        14, 17, 22, 29, 51,  87,  80,  62,
+        18, 22, 37, 56, 68,  109, 103, 77,
+        24, 35, 55, 64, 81,  104, 113, 92,
+        49, 64, 78, 87, 103, 121, 120, 101,
+        72, 92, 95, 98, 112, 100, 103, 99,
+};
+
+/* Chrominance quantisation table */
+const uint8_t quant_table_1[] = {
+        /* Table K.2 ITU-T81 specification */
+        17, 18, 24, 47, 99, 99, 99, 99,
+        18, 21, 26, 66, 99, 99, 99, 99,
+        24, 26, 56, 99, 99, 99, 99, 99,
+        47, 66, 99, 99, 99, 99, 99, 99,
+        99, 99, 99, 99, 99, 99, 99, 99,
+        99, 99, 99, 99, 99, 99, 99, 99,
+        99, 99, 99, 99, 99, 99, 99, 99,
+        99, 99, 99, 99, 99, 99, 99, 99,
+};
+/* Luminance DC coefficients */
+const uint8_t huffm_dc_table_0[] = {
+        /* Table K.3 ITU-T81 specification */
+        0x00, 0x01, 0x05, 0x01,
+        0x01, 0x01, 0x01, 0x01,
+        0x01, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x01, 0x02, 0x03,
+        0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0A, 0x0B,
+};
+
+/* Chrominance DC coefficients */
+const uint8_t huffm_dc_table_1[] = {
+        /* Table K.4 ITU-T81 specification */
+        0x00, 0x03, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x01, 0x02, 0x03,
+        0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0A, 0x0B,
+};
+/* Luminance AC coefficients */
+const uint8_t huffm_ac_table_0[] = {
+        /* Table K.5 ITU-T81 specification */
+        0x00, 0x02, 0x01, 0x03,
+        0x03, 0x02, 0x04, 0x03,
+        0x05, 0x05, 0x04, 0x04,
+        0x00, 0x00, 0x01, 0x7D,
+        0x01, 0x02, 0x03, 0x00,
+        0x04, 0x11, 0x05, 0x12,
+        0x21, 0x31, 0x41, 0x06,
+        0x13, 0x51, 0x61, 0x07,
+        0x22, 0x71, 0x14, 0x32,
+        0x81, 0x91, 0xA1, 0x08,
+        0x23, 0x42, 0xB1, 0xC1,
+        0x15, 0x52, 0xD1, 0xF0,
+        0x24, 0x33, 0x62, 0x72,
+        0x82, 0x09, 0x0A, 0x16,
+        0x17, 0x18, 0x19, 0x1A,
+        0x25, 0x26, 0x27, 0x28,
+        0x29, 0x2A, 0x34, 0x35,
+        0x36, 0x37, 0x38, 0x39,
+        0x3A, 0x43, 0x44, 0x45,
+        0x46, 0x47, 0x48, 0x49,
+        0x4A, 0x53, 0x54, 0x55,
+        0x56, 0x57, 0x58, 0x59,
+        0x5A, 0x63, 0x64, 0x65,
+        0x66, 0x67, 0x68, 0x69,
+        0x6A, 0x73, 0x74, 0x75,
+        0x76, 0x77, 0x78, 0x79,
+        0x7A, 0x83, 0x84, 0x85,
+        0x86, 0x87, 0x88, 0x89,
+        0x8A, 0x92, 0x93, 0x94,
+        0x95, 0x96, 0x97, 0x98,
+        0x99, 0x9A, 0xA2, 0xA3,
+        0xA4, 0xA5, 0xA6, 0xA7,
+        0xA8, 0xA9, 0xAA, 0xB2,
+        0xB3, 0xB4, 0xB5, 0xB6,
+        0xB7, 0xB8, 0xB9, 0xBA,
+        0xC2, 0xC3, 0xC4, 0xC5,
+        0xC6, 0xC7, 0xC8, 0xC9,
+        0xCA, 0xD2, 0xD3, 0xD4,
+        0xD5, 0xD6, 0xD7, 0xD8,
+        0xD9, 0xDA, 0xE1, 0xE2,
+        0xE3, 0xE4, 0xE5, 0xE6,
+        0xE7, 0xE8, 0xE9, 0xEA,
+        0xF1, 0xF2, 0xF3, 0xF4,
+        0xF5, 0xF6, 0xF7, 0xF8,
+        0xF9, 0xFA,
+};
+
+/* Chrominance AC coefficients */
+const uint8_t huffm_ac_table_1[] = {
+        /* Table K.6 ITU-T81 specification */
+        0x00, 0x02, 0x01, 0x02,
+        0x04, 0x04, 0x03, 0x04,
+        0x07, 0x05, 0x04, 0x04,
+        0x00, 0x01, 0x02, 0x77,
+        0x00, 0x01, 0x02, 0x03,
+        0x11, 0x04, 0x05, 0x21,
+        0x31, 0x06, 0x12, 0x41,
+        0x51, 0x07, 0x61, 0x71,
+        0x13, 0x22, 0x32, 0x81,
+        0x08, 0x14, 0x42, 0x91,
+        0xA1, 0xB1, 0xC1, 0x09,
+        0x23, 0x33, 0x52, 0xF0,
+        0x15, 0x62, 0x72, 0xD1,
+        0x0A, 0x16, 0x24, 0x34,
+        0xE1, 0x25, 0xF1, 0x17,
+        0x18, 0x19, 0x1A, 0x26,
+        0x27, 0x28, 0x29, 0x2A,
+        0x35, 0x36, 0x37, 0x38,
+        0x39, 0x3A, 0x43, 0x44,
+        0x45, 0x46, 0x47, 0x48,
+        0x49, 0x4A, 0x53, 0x54,
+        0x55, 0x56, 0x57, 0x58,
+        0x59, 0x5A, 0x63, 0x64,
+        0x65, 0x66, 0x67, 0x68,
+        0x69, 0x6A, 0x73, 0x74,
+        0x75, 0x76, 0x77, 0x78,
+        0x79, 0x7A, 0x82, 0x83,
+        0x84, 0x85, 0x86, 0x87,
+        0x88, 0x89, 0x8A, 0x92,
+        0x93, 0x94, 0x95, 0x96,
+        0x97, 0x98, 0x99, 0x9A,
+        0xA2, 0xA3, 0xA4, 0xA5,
+        0xA6, 0xA7, 0xA8, 0xA9,
+        0xAA, 0xB2, 0xB3, 0xB4,
+        0xB5, 0xB6, 0xB7, 0xB8,
+        0xB9, 0xBA, 0xC2, 0xC3,
+        0xC4, 0xC5, 0xC6, 0xC7,
+        0xC8, 0xC9, 0xCA, 0xD2,
+        0xD3, 0xD4, 0xD5, 0xD6,
+        0xD7, 0xD8, 0xD9, 0xDA,
+        0xE2, 0xE3, 0xE4, 0xE5,
+        0xE6, 0xE7, 0xE8, 0xE9,
+        0xEA, 0xF2, 0xF3, 0xF4,
+        0xF5, 0xF6, 0xF7, 0xF8,
+        0xF9, 0xFA,
+};
+
+static jpeg_encode_instance_ctrl_t ${module.driver.jpeg_encode.name}_ctrl;
+const jpeg_encode_cfg_t  ${module.driver.jpeg_encode.name}_cfg = {
+    .input_data_format  = ${module.driver.jpeg_encode.input_data_format},
+    .output_data_format = ${module.driver.jpeg_encode.output_data_format},
+    .p_callback         = ${module.driver.jpeg_encode.p_callback},
+    .jedi_ipl           = ${module.driver.jpeg_encode.jedi_ipl},
+    .jdti_ipl           = ${module.driver.jpeg_encode.jdti_ipl},
+    .dri_marker         = ${module.driver.jpeg_encode.DRI},
+    .quality_factor     = ${module.driver.jpeg_encode.quality},
+    .vertical_resolution= ${module.driver.jpeg_encode.vertical_resolution},
+    .horizontal_resolution=${module.driver.jpeg_encode.horizontal_resolution},
+    .p_quant_luma_table   =    quant_table_0,   
+    .p_quant_croma_table    =   quant_table_1,               
+    .p_huffman_luma_ac_table = huffm_ac_table_0,
+    .p_huffman_luma_dc_table = huffm_dc_table_0,
+    .p_huffman_croma_ac_table = huffm_ac_table_1,
+    .p_huffman_croma_dc_table = huffm_dc_table_1,
+    .p_context = NULL
+};
+const jpeg_encode_instance_t ${module.driver.jpeg_encode.name} = {
+    .p_api  = (jpeg_encode_api_t const *)&amp;g_jpeg_encode_on_jpeg_encode,
+    .p_ctrl = &amp;${module.driver.jpeg_encode.name}_ctrl,
+    .p_cfg  = &amp;${module.driver.jpeg_encode.name}_cfg
+};
+        </declarations>
+        </module>
+   
+</synergyModuleDescription>

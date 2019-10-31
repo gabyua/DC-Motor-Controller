@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<synergyModuleDescription>
+
+    <module display="Framework|Services|${module.framework.sf_el_nx_crypto.name} NetX Crypto Hardware Accelerator" common="1" id="module.framework.sf_el_nx_crypto" version="1">
+		<constraint display="Requires SCE Common Driver">
+			 testExists("${module.framework.sf_el_nx_crypto.requires.module.driver.sce::module.driver.sce.name}")
+		</constraint>	
+	
+        <requires interface="_rtos" />
+        <requires interface="interface.driver.crypto" display="Add SCE COMMON Driver" id="module.framework.sf_el_nx_crypto.requires.module.driver.sce">
+			<override property="module.driver.sce.name" value="g_sce_0"/>
+		</requires>
+		
+		<provides interface="interface.framework.sf_el_nx_crypto" />
+        <provides interface="interface.framework.sf_el_nx_crypto.${module.framework.sf_el_nx_crypto.name}" />
+        
+		<property default="g_sf_el_nx_crypto" display="Name" id="module.framework.sf_el_nx_crypto.name" description="Module name.">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_el_nx_crypto.name}")</constraint>
+        </property>
+
+    </module>
+</synergyModuleDescription>
