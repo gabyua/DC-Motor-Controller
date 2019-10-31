@@ -5,8 +5,8 @@
 /*  information please refer to the GUIX Studio user's guide, or visit our web */
 /*  site at www.expresslogic.com.                                              */
 /*                                                                             */
-/*  GUIX Studio Revision 5.4.0.0                                               */
-/*  Date (dd.mm.yyyy):  2. 2.2018   Time (hh:mm): 17:44                        */
+/*  GUIX Studio Revision 5.4.2.9                                               */
+/*  Date (dd.mm.yyyy): 30.10.2019   Time (hh:mm): 21:36                        */
 /*******************************************************************************/
 
 
@@ -56,7 +56,11 @@
 #define GX_COLOR_ID_SLIDER_NEEDLE_FILL 22
 #define GX_COLOR_ID_SLIDER_NEEDLE_LINE1 23
 #define GX_COLOR_ID_SLIDER_NEEDLE_LINE2 24
-#define DISPLAY_1_COLOR_TABLE_SIZE 25
+#define GX_COLOR_ID_DISABLED_TEXT 25
+#define GX_COLOR_ID_DISABLED_FILL 26
+#define GX_COLOR_ID_READONLY_TEXT 27
+#define GX_COLOR_ID_READONLY_FILL 28
+#define DISPLAY_1_COLOR_TABLE_SIZE 29
 
 /* Font ID definitions                                                         */
 
@@ -76,14 +80,37 @@
 
 /* String Ids                                                                  */
 
-#define GX_STRING_ID_HELLO_WORLD 1
-#define GX_STRING_ID_CHECKBOX_TEXT 2
-#define GX_STRING_ID_BUTTON_DISABLED 3
-#define GX_STRING_ID_BUTTON_ENABLED 4
-#define GX_STRING_ID_INSTRUCT_CHECKBOX 5
-#define GX_STRING_ID_WINDOW1 6
-#define GX_STRING_ID_WINDOW2 7
-#define GX_STRING_ID_INSTRUCT_BUTTON 8
-#define DISPLAY_1_STRING_TABLE_SIZE 9
+#define GX_STRING_ID_PRINCIPAL 1
+#define GX_STRING_ID_DIAGNOSTICOS 2
+#define GX_STRING_ID_WINDOW2 3
+#define GX_STRING_ID_DUTY_CYCLE 4
+#define GX_STRING_ID_PROJECT_TEXT 5
+#define GX_STRING_ID_PROJECT_TEXT_2 6
+#define GX_STRING_ID_SPEED 7
+#define GX_STRING_ID_SW_VERSION 8
+#define GX_STRING_ID_HW_VERSION 9
+#define GX_STRING_ID_HW_VERSION_2 10
+#define GX_STRING_ID_PROGRAMERS_1 11
+#define GX_STRING_ID_PROGRAMERS_2 12
+#define GX_STRING_ID_SET_POINT 13
+#define GX_STRING_ID_DIAGNOSTICOS_1 14
+#define GX_STRING_ID_SHORT_MESSAGE_1 15
+#define GX_STRING_ID_SHORT_MESSAGE_2 16
+#define GX_STRING_ID_STRING_1 17
+#define GX_STRING_ID_STRING_2 18
+#define GX_STRING_ID_STRING_3 19
+#define GX_STRING_ID_STRING_4 20
+#define GX_STRING_ID_STRING_5 21
+#define GX_STRING_ID_STRING_6 22
+#define GX_STRING_ID_STRING_7 23
+#define GX_STRING_ID_STRING_8 24
+#define GX_STRING_ID_STRING_9 25
+#define GX_STRING_ID_STRING_10 26
+#define GX_STRING_ID_STRING_11 27
+#define GX_STRING_ID_STRING_12 28
+#define GX_STRING_ID_STRING_13 29
+#define GX_STRING_ID_STRING_14 30
+#define GX_STRING_ID_STRING_15 31
+#define DISPLAY_1_STRING_TABLE_SIZE 32
 
 #endif                                       /* sentry                         */

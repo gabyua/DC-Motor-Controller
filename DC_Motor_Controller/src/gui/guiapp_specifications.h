@@ -5,8 +5,8 @@
 /*  refer to the GUIX Studio user's guide, or visit our web site at            */
 /*  www.expresslogic.com.                                                      */
 /*                                                                             */
-/*  GUIX Studio Revision 5.4.0.0                                               */
-/*  Date (dd.mm.yyyy):  2. 2.2018   Time (hh:mm): 17:44                        */
+/*  GUIX Studio Revision 5.4.2.9                                               */
+/*  Date (dd.mm.yyyy): 30.10.2019   Time (hh:mm): 21:36                        */
 /*******************************************************************************/
 
 
@@ -24,12 +24,30 @@ extern   "C" {
 
 #define ID_WINDOW2 1
 #define ID_HELLO 2
-#define ID_WINDOW2_TEXT 3
-#define ID_WINDOW1 4
-#define ID_BUTTONENABLER 5
-#define ID_INSTRUCTIONS 6
+#define ID_DIAGNOSTICOS 3
+#define ID_SHORT1 4
+#define ID_SHORT2 5
+#define ID_WINDOW_1 6
 #define ID_WINDOWCHANGER 7
-#define ID_WINDOW1_TEXT 8
+#define ID_DUTYCYCLE 8
+#define ID_PROJECT 9
+#define ID_PROJECT_2 10
+#define ID_SW_VERSION 11
+#define ID_HW_VERSION 12
+#define ID_HW_VERSION_2 13
+#define ID_PROG_1 14
+#define ID_PROG_2 15
+#define ID_SETPOINT 16
+
+
+/* Define animation ids                                                        */
+
+#define GX_NEXT_ANIMATION_ID 1
+
+
+/* Define user event ids                                                       */
+
+#define GX_NEXT_USER_EVENT_ID GX_FIRST_USER_EVENT
 
 
 /* Declare properties structures for each utilized widget type                 */
@@ -47,6 +65,7 @@ typedef struct GX_STUDIO_WIDGET_STRUCT
    ULONG control_block_size;
    GX_RESOURCE_ID normal_fill_color_id;
    GX_RESOURCE_ID selected_fill_color_id;
+   GX_RESOURCE_ID disabled_fill_color_id;
    UINT (*create_function) (GX_CONST struct GX_STUDIO_WIDGET_STRUCT *, GX_WIDGET *, GX_WIDGET *);
    void (*draw_function) (GX_WIDGET *);
    UINT (*event_function) (GX_WIDGET *, GX_EVENT *);
@@ -77,18 +96,6 @@ typedef struct
     GX_RESOURCE_ID font_id;
     GX_RESOURCE_ID normal_text_color_id;
     GX_RESOURCE_ID selected_text_color_id;
-    GX_RESOURCE_ID unchecked_pixelmap_id;
-    GX_RESOURCE_ID checked_pixelmap_id;
-    GX_RESOURCE_ID unchecked_disabled_pixelmap_id;
-    GX_RESOURCE_ID checked_disabled_pixelmap_id;
-} GX_CHECKBOX_PROPERTIES;
-
-typedef struct
-{
-    GX_RESOURCE_ID string_id;
-    GX_RESOURCE_ID font_id;
-    GX_RESOURCE_ID normal_text_color_id;
-    GX_RESOURCE_ID selected_text_color_id;
 } GX_PROMPT_PROPERTIES;
 
 typedef struct
@@ -103,16 +110,24 @@ typedef struct WINDOW2_CONTROL_BLOCK_STRUCT
 {
     GX_WINDOW_MEMBERS_DECLARE
     GX_PROMPT window2_hellotext;
-    GX_PROMPT window2_window2_text;
+    GX_PROMPT window2_diagnosticos;
+    GX_PROMPT window2_corto1;
+    GX_PROMPT window2_corto2;
 } WINDOW2_CONTROL_BLOCK;
 
 typedef struct WINDOW1_CONTROL_BLOCK_STRUCT
 {
     GX_WINDOW_MEMBERS_DECLARE
-    GX_CHECKBOX window1_buttonenabler;
-    GX_PROMPT window1_instructions;
     GX_TEXT_BUTTON window1_windowchanger;
-    GX_PROMPT window1_window1_text;
+    GX_PROMPT window1_dutyCycle;
+    GX_PROMPT window1_project_text;
+    GX_PROMPT window1_project_text2;
+    GX_PROMPT window1_swVersion;
+    GX_PROMPT window1_hwVersion;
+    GX_PROMPT window1_hwVersion_2;
+    GX_PROMPT window1_programers_1;
+    GX_PROMPT window1_programers_2;
+    GX_PROMPT window1_setPoint;
 } WINDOW1_CONTROL_BLOCK;
 
 
@@ -136,6 +151,7 @@ VOID _gx_dave2d_horizontal_pattern_line_draw_565(GX_DRAW_CONTEXT *context, INT x
 VOID _gx_dave2d_vertical_pattern_line_draw_565(GX_DRAW_CONTEXT *context, INT ystart, INT yend, INT xpos);
 VOID _gx_dave2d_pixel_write_565(GX_DRAW_CONTEXT *context, INT x, INT y, GX_COLOR color);
 VOID _gx_dave2d_pixel_blend_565(GX_DRAW_CONTEXT *context, INT x, INT y, GX_COLOR fcolor, GX_UBYTE alpha);
+VOID _gx_dave2d_pixelmap_rotate_16bpp(GX_DRAW_CONTEXT *context, INT xpos, INT ypos, GX_PIXELMAP *pixelmap, INT angle, INT rot_cx, INT rot_cy);
 VOID _gx_dave2d_drawing_initiate(GX_DISPLAY *display, GX_CANVAS *canvas);
 VOID _gx_dave2d_drawing_complete(GX_DISPLAY *display, GX_CANVAS *canvas);
 VOID _gx_dave2d_horizontal_line(GX_DRAW_CONTEXT *context,
@@ -196,8 +212,8 @@ typedef struct GX_STUDIO_DISPLAY_INFO_STRUCT
     GX_CONST GX_CHAR *canvas_name;
     GX_CONST GX_THEME **theme_table;
     GX_CONST GX_CHAR ***language_table;
-    UINT     theme_table_size;
-    UINT     language_table_size;
+    USHORT   theme_table_size;
+    USHORT   language_table_size;
     UINT     string_table_size;
     UINT     x_resolution;
     UINT     y_resolution;
@@ -212,7 +228,6 @@ typedef struct GX_STUDIO_DISPLAY_INFO_STRUCT
 /* Declare Studio-generated functions for creating top-level widgets           */
 
 UINT gx_studio_text_button_create(GX_CONST GX_STUDIO_WIDGET *info, GX_WIDGET *control_block, GX_WIDGET *parent);
-UINT gx_studio_checkbox_create(GX_CONST GX_STUDIO_WIDGET *info, GX_WIDGET *control_block, GX_WIDGET *parent);
 UINT gx_studio_prompt_create(GX_CONST GX_STUDIO_WIDGET *info, GX_WIDGET *control_block, GX_WIDGET *parent);
 UINT gx_studio_window_create(GX_CONST GX_STUDIO_WIDGET *info, GX_WIDGET *control_block, GX_WIDGET *parent);
 GX_WIDGET *gx_studio_widget_create(GX_BYTE *storage, GX_CONST GX_STUDIO_WIDGET *definition, GX_WIDGET *parent);

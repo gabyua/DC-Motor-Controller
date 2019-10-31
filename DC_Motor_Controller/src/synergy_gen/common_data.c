@@ -299,8 +299,8 @@ uint8_t g_sf_el_gx_canvas[sizeof(g_display_fb_foreground[0])] BSP_ALIGN_VARIABLE
 
 /** JPEG Work Buffer */
 #if GX_USE_SYNERGY_JPEG
-#if (81920)
-uint8_t g_sf_el_gx_jpegbuffer[81920] BSP_ALIGN_VARIABLE_V2(64) BSP_PLACE_IN_SECTION_V2(".bss");
+#if (768000)
+uint8_t g_sf_el_gx_jpegbuffer[768000] BSP_ALIGN_VARIABLE_V2(64) BSP_PLACE_IN_SECTION_V2(".sdram");
 #endif
 #endif
 
@@ -355,7 +355,7 @@ static const sf_el_gx_cfg_t g_sf_el_gx_cfg =
   /* JPEG Work Buffer Configuration */
 #if GX_USE_SYNERGY_JPEG
   .p_jpegbuffer = g_sf_el_gx_jpegbuffer,
-  .jpegbuffer_size = 81920,
+  .jpegbuffer_size = 768000,
   .p_sf_jpeg_decode_instance = (void *)&g_sf_jpeg_decode0,
 #else
   .p_jpegbuffer = NULL,
@@ -428,12 +428,12 @@ void sf_message_init0(void)
         g_sf_message0_err_callback ((void *) &g_sf_message0, &ssp_err_g_sf_message0);
     }
 }
+const ioport_instance_t g_ioport =
+{ .p_api = &g_ioport_on_ioport, .p_cfg = NULL };
 const elc_instance_t g_elc =
 { .p_api = &g_elc_on_elc, .p_cfg = NULL };
 const cgc_instance_t g_cgc =
 { .p_api = &g_cgc_on_cgc, .p_cfg = NULL };
-const ioport_instance_t g_ioport =
-{ .p_api = &g_ioport_on_ioport, .p_cfg = NULL };
 /* Instance structure to use this module. */
 const fmi_instance_t g_fmi =
 { .p_api = &g_fmi_on_fmi };

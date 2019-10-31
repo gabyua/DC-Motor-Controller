@@ -281,9 +281,15 @@ void sensor_hall(external_irq_callback_args_t *p_args)
 /*int int_initCounter = 0;
 int int_runPWM = 0;*/
 
+ioport_level_t P60_Status = IOPORT_LEVEL_HIGH;
+
 
 void scheduler_timer(timer_callback_args_t *p_args)
 {
+
+    /* Instrumentation for throughput analysis */
+    P60_Status = !P60_Status;
+
     if(int_runPWM == 0)
     {
         if(int_initCounter < 6)
@@ -301,7 +307,8 @@ void scheduler_timer(timer_callback_args_t *p_args)
     //clock_t t;
     //t = clock();
 
-    switch(int_minorFrame){
+    switch(int_minorFrame)
+    {
         case 0: //100ms
             readADCValue();
 
@@ -398,6 +405,7 @@ void scheduler_timer(timer_callback_args_t *p_args)
             updateDisplay();
 
             int_minorFrame = 0;
+            g_ioport.p_api->pinWrite(IOPORT_PORT_06_PIN_00, P60_Status);
             break;
         default:
             int_minorFrame = 0;
@@ -406,7 +414,6 @@ void scheduler_timer(timer_callback_args_t *p_args)
 
     //t = clock() - t;
     //double time_taken = ((double)t)/CLOCKS_PER_SEC;
-    //printf("The program took %f seconds to execute", time_taken);
 }
 
 void updateDisplay()
