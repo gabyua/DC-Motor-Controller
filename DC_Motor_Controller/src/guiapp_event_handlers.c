@@ -1,16 +1,38 @@
 
+#include <stdio.h>
 
 #include "gui/guiapp_resources.h"
 #include "gui/guiapp_specifications.h"
 
 #include "main_thread.h"
+#include "common.h"
 
-static bool button_enabled = false;
+UINT uint_dcValue = 0;
+UINT uint_speedValue = 0;
+UINT uint_setPointValue = 0;
+UINT uint_shortValue = 0;
+
+CHAR char_dcDisplay[50] = "";
+CHAR char_dcText[5] = "00";
+
+CHAR char_speedDisplay[50] = "";
+CHAR char_speedText[10] = "0000";
+
+CHAR char_setPointDisplay[50] = "";
+CHAR char_setPointText[10] = "0000";
+
+CHAR char_shortDisplay[50] = "";
+CHAR char_shortText[10] = "0000";
+
+
+CHAR char_shortLabel[15] = "Input: ";
+CHAR char_shortUnits[5] = " V";
 
 extern GX_WINDOW_ROOT * p_window_root;
 
 static UINT show_window(GX_WINDOW * p_new, GX_WIDGET * p_widget, bool detach_old);
 static void update_text_id(GX_WIDGET * p_widget, GX_RESOURCE_ID id, UINT string_id);
+static void update_text_string(GX_WIDGET * p_widget, GX_RESOURCE_ID id, CHAR * string);
 
 UINT window1_handler(GX_WINDOW *widget, GX_EVENT *event_ptr)
 {
@@ -18,20 +40,42 @@ UINT window1_handler(GX_WINDOW *widget, GX_EVENT *event_ptr)
 
     switch (event_ptr->gx_event_type)
     {
-    case GX_SIGNAL(ID_BUTTONENABLER, GX_EVENT_TOGGLE_ON):
-        button_enabled = true;
-        update_text_id(widget->gx_widget_parent, ID_WINDOWCHANGER, GX_STRING_ID_BUTTON_ENABLED);
-        update_text_id(widget->gx_widget_parent, ID_INSTRUCTIONS, GX_STRING_ID_INSTRUCT_BUTTON);
-        break;
-    case GX_SIGNAL(ID_BUTTONENABLER, GX_EVENT_TOGGLE_OFF):
-        button_enabled = false;
-        update_text_id(widget->gx_widget_parent, ID_WINDOWCHANGER, GX_STRING_ID_BUTTON_DISABLED);
-        update_text_id(widget->gx_widget_parent, ID_INSTRUCTIONS, GX_STRING_ID_INSTRUCT_CHECKBOX);
-        break;
     case GX_SIGNAL(ID_WINDOWCHANGER, GX_EVENT_CLICKED):
-        if(button_enabled){
-            show_window((GX_WINDOW*)&window2_1, (GX_WIDGET*)widget, true);
-        }
+        show_window((GX_WINDOW*)&window2, (GX_WIDGET*)widget, true);
+        break;
+    case DC_UPDATE_EVENT:
+        uint_dcValue = event_ptr->gx_event_payload.gx_event_timer_id;
+        sprintf(char_dcText,"%x",uint_dcValue);
+
+        strcpy(char_dcDisplay, "Duty Cycle: ");
+        strcat(char_dcDisplay,char_dcText);
+        strcat(char_dcDisplay,"%");
+
+        update_text_string(widget->gx_widget_parent, ID_DUTYCYCLE, char_dcDisplay);
+        break;
+    case SPEED_UPDATE_EVENT:
+        uint_speedValue = event_ptr->gx_event_payload.gx_event_timer_id;
+        sprintf(char_speedText,"%x",uint_speedValue);
+
+        strcpy(char_speedDisplay, "Speed: ");
+        strcat(char_speedDisplay,char_speedText);
+        strcat(char_speedDisplay," RPM");
+
+        update_text_string(widget->gx_widget_parent, ID_SPEED, char_speedDisplay);
+        break;
+    case SETPOINT_UPDATE_EVENT:
+        //uint_setPointValue++;
+        uint_setPointValue = event_ptr->gx_event_payload.gx_event_timer_id;
+        sprintf(char_setPointText,"%x",uint_setPointValue);
+
+        strcpy(char_setPointDisplay, "Set Point: ");
+        strcat(char_setPointDisplay,char_setPointText);
+        strcat(char_setPointDisplay," RPM");
+
+        update_text_string(widget->gx_widget_parent, ID_SETPOINT, char_setPointDisplay);
+        break;
+    case SWVERSION_UPDATE_EVENT:
+        update_text_string(widget->gx_widget_parent, ID_SW_VERSION, "SW Version: 0.1");
         break;
     default:
         gx_window_event_process(widget, event_ptr);
@@ -44,10 +88,43 @@ UINT window1_handler(GX_WINDOW *widget, GX_EVENT *event_ptr)
 UINT window2_handler(GX_WINDOW *widget, GX_EVENT *event_ptr)
 {
     UINT result = gx_window_event_process(widget, event_ptr);
+    ULONG ulong_eventType = event_ptr->gx_event_type;
 
-    switch (event_ptr->gx_event_type){
+    switch (ulong_eventType){
         case GX_EVENT_PEN_UP:
             show_window((GX_WINDOW*)&window1, (GX_WIDGET*)widget, true);
+            break;
+        case SHORT_BATTERY_UPDATE_EVENT:
+        case SHORT_GROUND_UPDATE_EVENT:
+            //uint_setPointValue++;
+            uint_shortValue = event_ptr->gx_event_payload.gx_event_timer_id;
+
+            int int_shortValueUnits = uint_shortValue % 10;
+            int int_shortValueDec = uint_shortValue / 10;
+
+            strcpy(char_shortDisplay, "Input: ");
+
+            sprintf(char_shortText,"%d",int_shortValueDec);
+            strcat(char_shortDisplay,char_shortText);
+
+            strcat(char_shortDisplay,".");
+
+            sprintf(char_shortText,"%d",int_shortValueUnits);
+            strcat(char_shortDisplay,char_shortText);
+
+            strcat(char_shortDisplay," V");
+
+            if(ulong_eventType == SHORT_BATTERY_UPDATE_EVENT){
+                update_text_string(widget->gx_widget_parent, ID_SHORT1, "Short to battery detected!");
+            }else{
+                update_text_string(widget->gx_widget_parent, ID_SHORT1, "Short to ground detected!");
+            }
+
+            update_text_string(widget->gx_widget_parent, ID_SHORT2, char_shortDisplay);
+            break;
+        case NO_SHORT_UPDATE_EVENT:
+            update_text_string(widget->gx_widget_parent, ID_SHORT1, "");
+            update_text_string(widget->gx_widget_parent, ID_SHORT2, "");
             break;
         default:
             result = gx_window_event_process(widget, event_ptr);
@@ -87,10 +164,20 @@ static void update_text_id(GX_WIDGET * p_widget, GX_RESOURCE_ID id, UINT string_
 {
     GX_PROMPT * p_prompt = NULL;
 
-    ssp_err_t err = (ssp_err_t)gx_widget_find(p_widget, (USHORT)id, GX_SEARCH_DEPTH_INFINITE, (GX_WIDGET**)&p_prompt);
+    ssp_err_t err = gx_widget_find(p_widget, id, GX_SEARCH_DEPTH_INFINITE, (GX_WIDGET**)&p_prompt);
     if (TX_SUCCESS == err)
     {
         gx_prompt_text_id_set(p_prompt, string_id);
     }
 }
 
+static void update_text_string(GX_WIDGET * p_widget, GX_RESOURCE_ID id, CHAR * string)
+{
+    GX_PROMPT * p_prompt = NULL;
+
+    ssp_err_t err = gx_widget_find(p_widget, id, GX_SEARCH_DEPTH_INFINITE, (GX_WIDGET**)&p_prompt);
+    if (TX_SUCCESS == err)
+    {
+        gx_prompt_text_set(p_prompt, string);
+    }
+}
